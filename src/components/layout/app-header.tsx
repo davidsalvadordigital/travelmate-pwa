@@ -3,15 +3,15 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet'; // SheetHeader añadido
-import { Menu, MapPin, BookMarked, HelpCircle, LogIn, UserPlus, ShoppingCart, Search, Globe } from 'lucide-react'; // UserPlus, ShoppingCart, Search, Globe añadidos
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Menu, MapPin, Search as SearchIcon, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn } from 'lucide-react'; // Renombrado Search a SearchIcon para evitar conflicto
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
 
 // Navegación principal según el prompt de Civitatis (simplificado)
 const mainNavItems = [
   { href: '/destinations', label: 'Destinos', icon: MapPin },
-  { href: '/activities', label: 'Actividades', icon: Search }, // Icono Search para Actividades como en Civitatis
+  { href: '/activities', label: 'Actividades', icon: SearchIcon },
   { href: '/bookings', label: 'Mis Reservas', icon: BookMarked },
 ];
 
@@ -22,8 +22,8 @@ const utilityNavItems = [
 ];
 
 const authNavButtons = [
-  { href: '/login', label: 'Iniciar Sesión', variant: 'outline' as const }, // 'outline' para que se vea bien sobre el fondo rosa
-  { href: '/signup', label: 'Registrarse', variant: 'ghost' as const }, // 'ghost' o similar para que sea sutil
+  { href: '/login', label: 'Iniciar Sesión', variant: 'outline' as const }, 
+  { href: '/signup', label: 'Registrarse', variant: 'ghost' as const }, 
 ];
 
 
@@ -87,6 +87,8 @@ function NavLinks({ isMobile = false, onLinkClick }: { isMobile?: boolean, onLin
             onClick={onLinkClick}
           >
             <Link href={item.href}>
+              {item.label === 'Registrarse' ? <UserPlus className="mr-2 h-4 w-4" /> : null}
+              {item.label === 'Iniciar Sesión' ? <LogIn className="mr-2 h-4 w-4" /> : null}
               {item.label}
             </Link>
           </Button>
@@ -111,13 +113,13 @@ export function AppHeader() {
   if (!mounted) {
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center h-16"> {/* Altura fija para consistencia */}
-          <div className="text-3xl font-bold">Travely</div> {/* Placeholder Logo */}
-          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div> {/* Placeholder para icono de menú */}
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center h-16">
+          <div className="text-3xl font-bold">Travely</div>
+          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div>
           <div className="hidden md:flex space-x-4 items-center">
-            {[...Array(3)].map((_, i) => ( // Menos items en esqueleto
+            {[...Array(3)].map((_, i) => 
               <div key={i} className="h-6 w-24 bg-primary/80 rounded-md animate-pulse"></div>
-            ))}
+            )}
             <div className="h-6 w-6 bg-primary/80 rounded-full animate-pulse"></div>
             <div className="h-6 w-6 bg-primary/80 rounded-full animate-pulse"></div>
             <div className="h-8 w-28 bg-primary/80 rounded-md animate-pulse"></div>
@@ -131,7 +133,7 @@ export function AppHeader() {
   return (
     // Header principal con fondo Rosa Travely (primary) y texto blanco (primary-foreground)
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center h-16"> {/* Altura fija */}
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center h-16">
         <Logo />
         {isMobile ? (
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -143,6 +145,8 @@ export function AppHeader() {
             <SheetContent side="right" className="w-[300px] sm:w-[360px] bg-primary text-primary-foreground p-0 flex flex-col">
               <SheetHeader className="p-4 border-b border-primary-foreground/20">
                 <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">Menú</SheetTitle>
+                {/* sr-only title for accessibility as required by Radix Dialog (Sheet is based on Dialog) */}
+                <div className="sr-only"><SheetTitle>Menú Principal</SheetTitle></div>
               </SheetHeader>
               <div className="flex-grow overflow-y-auto">
                 <NavLinks isMobile onLinkClick={() => setSheetOpen(false)} />
@@ -156,3 +160,4 @@ export function AppHeader() {
     </header>
   );
 }
+
