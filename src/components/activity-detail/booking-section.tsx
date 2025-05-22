@@ -7,14 +7,15 @@ import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Users, DollarSign,ShoppingCart } from 'lucide-react';
+import { CalendarIcon, Users, Minus, Plus, ShoppingCart, Euro } from 'lucide-react'; // DollarSign cambiado por Euro
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale'; // Importar locale español
 import type { Activity } from '@/components/activities/activity-card';
 import { useToast } from "@/hooks/use-toast"
 
 
 interface BookingSectionProps {
-  activity: Activity & { priceRange: string }; // Assuming priceRange like '$50 - $70' might need parsing or a fixed price
+  activity: Activity & { priceRange: string }; 
 }
 
 export function BookingSection({ activity }: BookingSectionProps) {
@@ -23,8 +24,8 @@ export function BookingSection({ activity }: BookingSectionProps) {
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const { toast } = useToast();
 
-  // Simplified price parsing - assumes lower bound of priceRange is the per-person price
-  const basePricePerPerson = parseFloat(activity.priceRange.split('-')[0].replace('$', '')) || 50;
+  // Parseo de precio simplificado - asume que el límite inferior de priceRange es el precio por persona
+  const basePricePerPerson = parseFloat(activity.priceRange.split('-')[0].replace('€', '').trim()) || 50;
 
   useEffect(() => {
     if (selectedDate && numberOfPeople > 0) {
@@ -37,37 +38,38 @@ export function BookingSection({ activity }: BookingSectionProps) {
   const handleBooking = () => {
     if (!selectedDate) {
       toast({
-        title: "Booking Error",
-        description: "Please select a date for your activity.",
+        title: "Error en la Reserva",
+        description: "Por favor, selecciona una fecha para tu actividad.",
         variant: "destructive",
       });
       return;
     }
     if (numberOfPeople <= 0) {
       toast({
-        title: "Booking Error",
-        description: "Please specify at least one person.",
+        title: "Error en la Reserva",
+        description: "Por favor, especifica al menos una persona.",
         variant: "destructive",
       });
       return;
     }
-    // Proceed with booking logic
-    console.log('Booking details:', { activityId: activity.id, date: selectedDate, people: numberOfPeople, totalPrice });
+    // Proceder con la lógica de reserva
+    console.log('Detalles de la reserva:', { activityId: activity.id, date: selectedDate, people: numberOfPeople, totalPrice });
     toast({
-      title: "Booking Initiated!",
-      description: `Booking for ${activity.title} on ${selectedDate ? format(selectedDate, 'PPP') : ''} for ${numberOfPeople} people. Total: $${totalPrice?.toFixed(2)}`,
+      title: "¡Reserva Iniciada!",
+      description: `Reserva para ${activity.title} el ${selectedDate ? format(selectedDate, 'PPP', { locale: es }) : ''} para ${numberOfPeople} persona(s). Total: €${totalPrice?.toFixed(2)}`,
+      variant: "default" // Usar default en lugar de success si no hay color específico
     });
   };
 
   return (
-    <Card className="sticky top-24 shadow-xl">
+    <Card className="sticky top-24 shadow-xl rounded-lg">
       <CardHeader>
-        <CardTitle className="text-2xl text-accent">Book This Activity</CardTitle>
-        <CardDescription>Select your date and number of participants.</CardDescription>
+        <CardTitle className="text-2xl text-primary">Reservar Actividad</CardTitle> {/* Cambiado accent por primary */}
+        <CardDescription>Selecciona la fecha y el número de participantes.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <Label htmlFor="activity-date" className="font-medium">Date</Label>
+          <Label htmlFor="activity-date" className="font-medium">Fecha</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -76,7 +78,7 @@ export function BookingSection({ activity }: BookingSectionProps) {
                 className="w-full justify-start text-left font-normal mt-1"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                {selectedDate ? format(selectedDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -85,22 +87,23 @@ export function BookingSection({ activity }: BookingSectionProps) {
                 selected={selectedDate}
                 onSelect={setSelectedDate}
                 initialFocus
-                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } // Disable past dates
+                locale={es} // Aplicar locale español al calendario
+                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } // Deshabilitar fechas pasadas
               />
             </PopoverContent>
           </Popover>
         </div>
 
         <div>
-          <Label htmlFor="number-of-people" className="font-medium">Number of People</Label>
+          <Label htmlFor="number-of-people" className="font-medium">Número de Personas</Label>
           <div className="flex items-center mt-1">
             <Button 
               variant="outline" 
               size="icon" 
               onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
               disabled={numberOfPeople <= 1}
-              aria-label="Decrease number of people"
-            > - </Button>
+              aria-label="Disminuir número de personas"
+            > <Minus className="h-4 w-4"/> </Button>
             <Input
               id="number-of-people"
               type="number"
@@ -108,23 +111,23 @@ export function BookingSection({ activity }: BookingSectionProps) {
               onChange={(e) => setNumberOfPeople(Math.max(1, parseInt(e.target.value) || 1))}
               min="1"
               className="w-16 text-center mx-2"
-              aria-label="Number of people"
+              aria-label="Número de personas"
             />
             <Button 
               variant="outline" 
               size="icon" 
               onClick={() => setNumberOfPeople(prev => prev + 1)}
-              aria-label="Increase number of people"
-            > + </Button>
+              aria-label="Aumentar número de personas"
+            > <Plus className="h-4 w-4"/> </Button>
           </div>
         </div>
         
         {totalPrice !== null && (
           <div className="pt-4 border-t">
             <p className="text-xl font-semibold text-foreground flex items-center justify-between">
-              <span>Total Price:</span>
-              <span className="flex items-center">
-                <DollarSign className="h-5 w-5 mr-1 text-green-600" />
+              <span>Precio Total:</span>
+              <span className="flex items-center text-primary"> {/* Color primario para el precio */}
+                <Euro className="h-5 w-5 mr-1" />
                 {totalPrice.toFixed(2)}
               </span>
             </p>
@@ -135,11 +138,11 @@ export function BookingSection({ activity }: BookingSectionProps) {
       <CardFooter>
         <Button 
           size="lg" 
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg" // Aumentar tamaño y padding
           onClick={handleBooking}
           disabled={!selectedDate || numberOfPeople <= 0}
         >
-          <ShoppingCart className="mr-2 h-5 w-5" /> Book Now
+          <ShoppingCart className="mr-2 h-5 w-5" /> Reservar Ahora
         </Button>
       </CardFooter>
     </Card>

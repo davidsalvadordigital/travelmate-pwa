@@ -6,9 +6,9 @@ import { CalendarDays, Users, Star, MapPin, ListChecks, Info, ChevronLeft, Chevr
 import { ImageGallery } from '@/components/activity-detail/image-gallery';
 import { BookingSection } from '@/components/activity-detail/booking-section';
 import { DetailTabs } from '@/components/activity-detail/detail-tabs';
-import type { Activity } from '@/components/activities/activity-card'; // Re-use type
+import type { Activity } from '@/components/activities/activity-card'; // Reutilizar tipo
 
-// Mock data for a single activity
+// Datos de ejemplo para una actividad
 const mockActivity: Activity & {
   description: string;
   images: { src: string, alt: string, dataAiHint: string }[];
@@ -18,55 +18,57 @@ const mockActivity: Activity & {
   reviews: { user: string, rating: number, comment: string, date: string }[];
 } = {
   id: '1',
-  title: 'Eiffel Tower Summit Experience with Guided Tour',
-  duration: '2 hours',
+  title: 'Experiencia Cumbre Torre Eiffel con Tour Guiado',
+  duration: '2 horas',
   rating: 4.5,
-  priceRange: '$50 - $70', // This might become a specific price here
-  image: 'https://placehold.co/1200x800.png',
-  dataAiHint: 'Eiffel Tower view',
-  destination: 'Paris, France',
-  description: 'Ascend to the summit of the iconic Eiffel Tower for breathtaking panoramic views of Paris. This experience includes a guided tour providing fascinating insights into the history and architecture of this world-famous landmark. Skip-the-line access ensures you make the most of your time.',
+  priceRange: '€65', // Precio específico para la página de detalle
+  image: 'https://placehold.co/1200x800.png', // Imagen principal para la tarjeta, si se usara
+  dataAiHint: 'Torre Eiffel vista',
+  destination: 'París, Francia',
+  description: 'Asciende a la cumbre de la icónica Torre Eiffel para disfrutar de impresionantes vistas panorámicas de París. Esta experiencia incluye un tour guiado que ofrece fascinantes conocimientos sobre la historia y arquitectura de este monumento mundialmente famoso. El acceso sin colas te asegura aprovechar al máximo tu tiempo.',
   images: [
-    { src: 'https://placehold.co/1200x800.png', alt: 'Eiffel Tower view from summit', dataAiHint: 'Paris cityscape' },
-    { src: 'https://placehold.co/1200x800.png', alt: 'Eiffel Tower structure detail', dataAiHint: 'Eiffel Tower architecture' },
-    { src: 'https://placehold.co/1200x800.png', alt: 'Tour group at Eiffel Tower', dataAiHint: 'tourists Paris' },
+    { src: 'https://placehold.co/1200x800.png', alt: 'Vista de la Torre Eiffel desde la cumbre', dataAiHint: 'ciudad paris' },
+    { src: 'https://placehold.co/1200x800.png', alt: 'Detalle estructura Torre Eiffel', dataAiHint: 'arquitectura Torre Eiffel' },
+    { src: 'https://placehold.co/1200x800.png', alt: 'Grupo de turistas en la Torre Eiffel', dataAiHint: 'turistas paris' },
   ],
-  inclusions: ['Eiffel Tower summit access ticket', 'Professional guide', 'Small group tour', 'Skip-the-line access'],
-  exclusions: ['Hotel pickup and drop-off', 'Gratuities', 'Food and drinks'],
-  meetingPoint: 'Meet your guide at the base of the Eiffel Tower, near the North Pillar. Look for the "Travely" sign.',
+  inclusions: ['Ticket de acceso a la cumbre de la Torre Eiffel', 'Guía profesional', 'Tour en grupo pequeño', 'Acceso sin colas'],
+  exclusions: ['Recogida y regreso al hotel', 'Propinas', 'Comida y bebidas'],
+  meetingPoint: 'Encuentra a tu guía en la base de la Torre Eiffel, cerca del Pilar Norte. Busca el letrero de "Travely".',
   reviews: [
-    { user: 'Alice B.', rating: 5, comment: 'Absolutely stunning views and our guide was fantastic!', date: '2024-07-15' },
-    { user: 'John D.', rating: 4, comment: 'Great experience, though a bit crowded at the top.', date: '2024-07-10' },
+    { user: 'Ana B.', rating: 5, comment: '¡Vistas absolutamente impresionantes y nuestro guía fue fantástico!', date: '2024-07-15' },
+    { user: 'Juan D.', rating: 4, comment: 'Gran experiencia, aunque un poco concurrido en la cima.', date: '2024-07-10' },
+    { user: 'Laura M.', rating: 4.5, comment: 'Vale la pena. El guía nos contó muchas anécdotas.', date: '2024-07-05' },
   ],
 };
 
 
 export default function ActivityDetailPage({ params }: { params: { id: string } }) {
-  // In a real app, fetch activity data based on params.id
+  // En una aplicación real, se obtendrían los datos de la actividad según params.id
   const activity = mockActivity; 
 
   if (!activity) {
-    return <p>Activity not found.</p>;
+    return <p>Actividad no encontrada.</p>;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="mb-6 shadow-lg overflow-hidden">
+      <Card className="mb-6 shadow-lg overflow-hidden rounded-lg"> {/* Asegurar bordes redondeados */}
         <ImageGallery images={activity.images} />
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="shadow-md">
+          <Card className="shadow-md rounded-lg">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-primary">{activity.title}</CardTitle>
-              <CardDescription className="text-md text-muted-foreground flex items-center gap-4 pt-2">
+              <CardDescription className="text-md text-muted-foreground flex items-center gap-4 pt-2 flex-wrap">
                 <span className="flex items-center"><MapPin className="h-4 w-4 mr-1" /> {activity.destination}</span>
-                <span className="flex items-center"><Star className="h-4 w-4 mr-1 text-yellow-400 fill-yellow-400" /> {activity.rating.toFixed(1)} ({activity.reviews.length} reviews)</span>
+                <span className="flex items-center"><Star className="h-4 w-4 mr-1 text-yellow-400 fill-yellow-400" /> {activity.rating.toFixed(1)} ({activity.reviews.length} opiniones)</span>
+                <span className="flex items-center"><CalendarDays className="h-4 w-4 mr-1" /> Duración: {activity.duration}</span>
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-foreground leading-relaxed">{activity.description}</p>
+              {/* La descripción principal ahora está en la pestaña */}
             </CardContent>
           </Card>
           

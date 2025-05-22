@@ -1,19 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BadgeDollarSign, Users, CheckCircle2, ShieldCheck, Smile } from 'lucide-react';
+import { BadgeDollarSign, Users, CheckCircle2, ShieldCheck, SmilePlus } from 'lucide-react'; // Cambiado Smile por SmilePlus
 
 const usps = [
-  { title: 'Best Price Guarantee', description: 'Find the best deals on activities worldwide.', icon: BadgeDollarSign },
-  { title: 'Expert Local Guides', description: 'Knowledgeable guides for an authentic experience.', icon: Users },
-  { title: 'Easy & Secure Booking', description: 'Quick, hassle-free, and secure online booking.', icon: CheckCircle2 },
-  { title: 'Flexible Cancellation', description: 'Peace of mind with flexible cancellation policies.', icon: ShieldCheck },
-  { title: '24/7 Customer Support', description: 'We are here to help you anytime, anywhere.', icon: Smile },
+  { title: 'Mejor Precio Garantizado', description: 'Encuentra las mejores ofertas en actividades en todo el mundo.', icon: BadgeDollarSign },
+  { title: 'Guías Locales Expertos', description: 'Guías conocedores para una experiencia auténtica.', icon: Users },
+  { title: 'Reserva Fácil y Segura', description: 'Reserva online rápida, sin complicaciones y segura.', icon: CheckCircle2 },
+  { title: 'Cancelación Flexible', description: 'Tranquilidad con políticas de cancelación flexibles.', icon: ShieldCheck },
+  { title: 'Atención al Cliente 24/7', description: 'Estamos aquí para ayudarte en cualquier momento y lugar.', icon: SmilePlus },
 ];
 
 export function UspSection() {
   return (
     <section className="bg-secondary py-16 rounded-xl">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-foreground mb-10 text-center">Why Book With Travely?</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-10 text-center">¿Por Qué Reservar Con Travely?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {usps.map((usp, index) => (
             <Card key={index} className="text-center border-none shadow-lg bg-card hover:scale-105 transition-transform duration-300">

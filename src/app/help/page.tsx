@@ -2,64 +2,67 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Mail, Phone } from "lucide-react";
+import { Search, Mail, Phone, HelpCircle } from "lucide-react"; // HelpCircle añadido
 import Link from "next/link";
 
 const faqs = [
   {
-    question: "How do I book an activity?",
-    answer: "To book an activity, simply browse our selection, choose your desired activity, select your date and number of participants, and proceed to checkout. You'll receive a confirmation email once your booking is complete."
+    question: "¿Cómo reservo una actividad?",
+    answer: "Para reservar una actividad, simplemente navega por nuestra selección, elige la actividad deseada, selecciona tu fecha y número de participantes, y procede al pago. Recibirás un correo de confirmación una vez completada tu reserva."
   },
   {
-    question: "What is your cancellation policy?",
-    answer: "Cancellation policies vary by activity. Please check the specific activity's details page for its cancellation policy. Many activities offer free cancellation up to 24-48 hours before the start time."
+    question: "¿Cuál es su política de cancelación?",
+    answer: "Las políticas de cancelación varían según la actividad. Por favor, consulta la página de detalles de la actividad específica para su política de cancelación. Muchas actividades ofrecen cancelación gratuita hasta 24-48 horas antes de la hora de inicio."
   },
   {
-    question: "How can I find my booking details?",
-    answer: "You can find all your booking details in the 'My Bookings' section of your account. You will also receive a confirmation email with all the necessary information."
+    question: "¿Cómo puedo encontrar los detalles de mi reserva?",
+    answer: "Puedes encontrar todos los detalles de tu reserva en la sección 'Mis Reservas' de tu cuenta. También recibirás un correo de confirmación con toda la información necesaria."
   },
   {
-    question: "What payment methods do you accept?",
-    answer: "We accept major credit cards (Visa, MasterCard, American Express) and PayPal. All payments are processed securely."
+    question: "¿Qué métodos de pago aceptan?",
+    answer: "Aceptamos las principales tarjetas de crédito (Visa, MasterCard, American Express) y PayPal. Todos los pagos se procesan de forma segura."
   },
   {
-    question: "How do I contact customer support?",
-    answer: "You can contact our customer support team via email at support@travely.example.com or by phone at +1-234-567-8900. We are available 24/7 to assist you."
+    question: "¿Cómo contacto con el servicio de atención al cliente?",
+    answer: "Puedes contactar a nuestro equipo de atención al cliente por correo electrónico en soporte@travely.example.com o por teléfono al +34-900-123-456. Estamos disponibles 24/7 para ayudarte."
   }
 ];
 
 export default function HelpPage() {
   return (
     <div className="space-y-12">
-      <Card className="shadow-lg text-center">
+      <Card className="shadow-lg text-center rounded-lg">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-primary">Help Center</CardTitle>
-          <CardDescription className="text-lg">How can we help you today?</CardDescription>
+           <div className="flex flex-col items-center mb-2">
+            <HelpCircle className="h-12 w-12 text-primary mb-3"/>
+            <CardTitle className="text-3xl font-bold text-primary">Centro de Ayuda</CardTitle>
+          </div>
+          <CardDescription className="text-lg">¿Cómo podemos ayudarte hoy?</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="w-full max-w-lg mx-auto flex items-center gap-2">
             <Input
               type="search"
-              placeholder="Search help articles..."
+              placeholder="Buscar artículos de ayuda..."
               className="flex-grow"
-              aria-label="Search help articles"
+              aria-label="Buscar artículos de ayuda"
             />
-            <Button type="submit" variant="default">
-              <Search className="mr-2 h-4 w-4" /> Search
+            <Button type="submit" variant="default" className="bg-primary hover:bg-primary/90">
+              <Search className="mr-2 h-4 w-4" /> Buscar
             </Button>
           </form>
         </CardContent>
       </Card>
 
       <section>
-        <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">Frequently Asked Questions</h2>
+        <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">Preguntas Frecuentes</h2>
         <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className="text-left hover:no-underline text-md font-medium">
+            <AccordionItem key={index} value={`item-${index}`} className="border-b last:border-b-0">
+              <AccordionTrigger className="text-left hover:no-underline text-md font-medium py-4">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground leading-relaxed">
+              <AccordionContent className="text-muted-foreground leading-relaxed pb-4">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
@@ -68,23 +71,23 @@ export default function HelpPage() {
       </section>
 
       <section className="text-center">
-        <h2 className="text-2xl font-semibold text-foreground mb-6">Still Need Help?</h2>
-        <Card className="max-w-md mx-auto shadow-md">
+        <h2 className="text-2xl font-semibold text-foreground mb-6">¿Aún Necesitas Ayuda?</h2>
+        <Card className="max-w-md mx-auto shadow-md rounded-lg">
             <CardHeader>
-                <CardTitle>Contact Us</CardTitle>
+                <CardTitle className="text-xl text-primary">Contáctanos</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <p className="text-muted-foreground">
-                    Our support team is ready to assist you.
+                    Nuestro equipo de soporte está listo para asistirte.
                 </p>
-                <Button asChild variant="outline" className="w-full">
-                    <Link href="mailto:support@travely.example.com">
-                        <Mail className="mr-2 h-4 w-4" /> Email Support
+                <Button asChild variant="outline" className="w-full hover:border-primary hover:text-primary">
+                    <Link href="mailto:soporte@travely.example.com">
+                        <Mail className="mr-2 h-4 w-4" /> Enviar Email
                     </Link>
                 </Button>
-                <Button asChild variant="outline" className="w-full">
-                    <Link href="tel:+12345678900">
-                        <Phone className="mr-2 h-4 w-4" /> Call Us
+                <Button asChild variant="outline" className="w-full hover:border-primary hover:text-primary">
+                    <Link href="tel:+34900123456"> {/* Número de ejemplo para España */}
+                        <Phone className="mr-2 h-4 w-4" /> Llámanos
                     </Link>
                 </Button>
             </CardContent>
