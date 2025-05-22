@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,9 +9,9 @@ body {
 
 @layer base {
   :root {
-    /* Paleta Civitatis-inspirada */
-    --background: 0 0% 100%; /* Blanco #FFFFFF */
-    --foreground: 210 10% 16.5%; /* Gris muy oscuro #212529 para texto principal */
+    /* Paleta Civitatis-inspirada (Rosa Travely) */
+    --background: 0 0% 100%; /* Blanco #FFFFFF (Fondo Principal Cuerpo) */
+    --foreground: 210 10% 16.5%; /* Gris muy oscuro #212529 (Texto Principal) */
 
     --card: 0 0% 100%; /* Tarjetas blancas */
     --card-foreground: 210 10% 16.5%; /* Texto en tarjetas */
@@ -18,17 +19,17 @@ body {
     --popover: 0 0% 100%; /* Popovers blancos */
     --popover-foreground: 210 10% 16.5%; /* Texto en popovers */
 
-    --primary: 327 100% 45.1%; /* Rosa Travely #E60073 */
-    --primary-foreground: 0 0% 100%; /* Blanco para texto sobre primario */
+    --primary: 327 100% 45.1%; /* Rosa Travely #E60073 (Acento Principal / CTA / Header) */
+    --primary-foreground: 0 0% 100%; /* Blanco #FFFFFF (Texto sobre Acento Principal) */
 
     /* Light Pink for secondary elements or backgrounds if needed */
     --secondary: 327 100% 95%; 
     --secondary-foreground: 210 10% 16.5%; /* Dark text on light pink */
 
-    --muted: 210 40% 98%; /* Gris muy claro #F8F9FA para fondos de sección */
-    --muted-foreground: 208 7% 46.5%; /* Gris medio #6C757D para texto sobre muted */
+    --muted: 210 40% 98%; /* Gris muy claro #F8F9FA (Fondo Secciones Claras) */
+    --muted-foreground: 208 7% 46.5%; /* Gris medio #6C757D (Texto Secundario/Subtítulos) */
 
-    --accent: 327 100% 45.1%; /* Rosa Travely #E60073 para CTAs y acentos */
+    --accent: 327 100% 45.1%; /* Rosa Travely #E60073 (CTAs y acentos) */
     --accent-foreground: 0 0% 100%; /* Blanco para texto sobre accent */
 
     --destructive: 0 84.2% 60.2%; /* Rojo estándar para destructive */
@@ -39,6 +40,10 @@ body {
     --ring: 327 100% 45.1%; /* Rosa Travely para outline/rings */
 
     --radius: 0.5rem;
+
+    /* Color de Éxito */
+    --success: 134 61% 40%; /* Verde #28A745 */
+    --success-foreground: 0 0% 100%; /* Blanco */
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -87,6 +92,9 @@ body {
     --input: 210 10% 15%; /* Fondo de input oscuro */
     --ring: 327 100% 55%; /* Ring rosa */
     
+    --success: 134 61% 45%; /* Verde (ligeramente más brillante para dark mode) */
+    --success-foreground: 0 0% 100%;
+
     --sidebar-background: 210 10% 10%;
     --sidebar-foreground: 0 0% 95%;
     --sidebar-primary: 327 100% 55%;

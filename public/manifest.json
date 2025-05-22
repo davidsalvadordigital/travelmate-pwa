@@ -1,5 +1,6 @@
+
 {
-  "name": "Travely - Actividades y Tours",
+  "name": "Travely - Tu Viaje Lleno de Experiencias",
   "short_name": "Travely",
   "description": "Reserva visitas guiadas, excursiones y actividades turísticas en español por todo el mundo con Travely.",
   "start_url": ".",
@@ -19,5 +20,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "lang": "es"
 }
