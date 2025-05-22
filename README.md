@@ -1,13 +1,17 @@
 # TravelMate PWA (Travely)
 
-Travely is a Progressive Web Application (PWA) for booking tourist activities, similar to Civitatis.com. This Next.js application provides a modern, responsive, and installable experience for users looking to discover and book travel experiences.
+Travely es una Aplicación Web Progresiva (PWA) para reservar actividades turísticas, inspirada en Civitatis.com. Esta aplicación Next.js proporciona una experiencia moderna, responsiva e instalable para usuarios que buscan descubrir y reservar experiencias de viaje.
 
-## Color Palette
+## Paleta de Colores (Inspirada en Civitatis)
 
--   **Primary Color (Travel Blue):** `#0A74DA` (HSL: `208 90% 45%`) - Used for main interactive elements, branding, and to reflect trust and reliability.
--   **Accent Color (Adventure Turquoise):** `#17A2B8` (HSL: `188 78% 40%`) - Used for highlighting important calls to action and secondary interactive elements.
--   **Background Color (Light Gray):** `#F8F9FA` (HSL: `210 40% 98%`) - Provides a neutral backdrop for readability and visual comfort.
--   **Foreground Color (Dark Gray):** `#212529` (HSL: `240 10% 3.9%` or similar dark gray) - Used for text and general UI elements on light backgrounds.
+-   **Acento Principal / CTA / Header (Rosa Travely):** `#E60073` (HSL: `327 100% 45.1%`)
+-   **Texto sobre Acento Principal:** `#FFFFFF` (HSL: `0 0% 100%`)
+-   **Fondo Principal Cuerpo:** `#FFFFFF` (HSL: `0 0% 100%`)
+-   **Fondo Secciones Claras (ej. "Principales Destinos"):** `#F8F9FA` (HSL: `210 40% 98%`)
+-   **Fondo Footer:** `#333333` (HSL: `0 0% 20%`)
+-   **Texto Principal (sobre fondos claros):** `#212529` (HSL: `210 10% 16.5%`)
+-   **Texto Secundario/Subtítulos (sobre fondos claros):** `#6C757D` (HSL: `208 7% 46.5%`)
+-   **Texto Footer (sobre fondo oscuro):** `#F1F1F1` (HSL: `0 0% 94.5%`)
 
 ## File Structure (Key Components)
 
@@ -57,15 +61,14 @@ Travely is a Progressive Web Application (PWA) for booking tourist activities, s
 ## PWA Features Summary
 
 -   **Manifest (`public/manifest.json`):**
-    -   Defines app characteristics: `name`, `short_name` (Travely), `description`, `start_url`, `display` (standalone), `background_color`, `theme_color`.
-    -   Includes references to placeholder icons for different sizes.
+    -   Define las características de la app: `name`, `short_name` (Travely), `description`, `start_url`, `display` (standalone), `background_color`, `theme_color`.
+    -   Incluye referencias a iconos placeholder con propósito "any maskable".
 -   **Service Worker (`public/service-worker.js`):**
-    -   Implements basic caching for static assets (app shell: `/`, `/manifest.json`, icons) using a 'Cache First' strategy for these assets.
-    -   Uses a 'Network Falling Back to Cache' strategy for navigation requests to ensure users get fresh content when online but can access cached versions offline.
-    -   Includes `install`, `activate`, and `fetch` event listeners.
-    -   The service worker is registered client-side via `src/components/pwa/service-worker-registration.tsx`.
--   **Installability:** The app can be installed on supported devices, providing an app-like experience.
--   **Offline Capabilities:** Basic offline access to cached shell and assets. More robust offline data handling would require advanced service worker strategies or libraries like `next-pwa`.
+    -   Implementa cacheo básico para assets estáticos (App Shell) usando una estrategia de "Network Falling Back to Cache" para navegaciones y "Cache First" para assets conocidos.
+    -   Incluye listeners para eventos `install`, `activate`, y `fetch` con comentarios en español.
+    -   El service worker se registra en el lado del cliente mediante `src/components/pwa/service-worker-registration.tsx`.
+-   **Instalabilidad:** La app puede ser instalada en dispositivos compatibles.
+-   **Capacidades Offline:** Acceso offline básico al shell y assets cacheados.
 
 ## Getting Started
 

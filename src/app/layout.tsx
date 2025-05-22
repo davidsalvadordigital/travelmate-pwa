@@ -16,16 +16,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Travely - Your Adventure Awaits',
-  description: 'Book tourist activities and discover amazing destinations with Travely.',
+  title: 'Travely - Tu Viaje Lleno de Experiencias',
+  description: 'Reserva visitas guiadas, excursiones y actividades turísticas en español por todo el mundo con Travely.',
   manifest: '/manifest.json',
   icons: {
-    apple: '/icons/icon-192x192.png', // Example, adjust as needed
+    apple: '/icons/icon-192x192.png',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0A74DA',
+  themeColor: '#E60073', // Rosa Travely
 }
 
 export default function RootLayout({
@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es"> {/* Cambiado a español */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
         <AppLayout>
           {children}

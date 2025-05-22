@@ -1,11 +1,11 @@
 {
-  "name": "TravelMate PWA",
+  "name": "Travely - Actividades y Tours",
   "short_name": "Travely",
-  "description": "Book your next adventure with Travely!",
-  "start_url": "/",
+  "description": "Reserva visitas guiadas, excursiones y actividades turísticas en español por todo el mundo con Travely.",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#F8F9FA",
-  "theme_color": "#0A74DA",
+  "background_color": "#FFFFFF",
+  "theme_color": "#E60073",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
