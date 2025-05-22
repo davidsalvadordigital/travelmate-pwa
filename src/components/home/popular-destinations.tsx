@@ -1,59 +1,57 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'; // CardContent y Button ya no se usan directamente aquí
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
 const destinations = [
-  { name: 'París, Francia', image: 'https://placehold.co/600x400.png', dataAiHint: 'Paris TorreEiffel', href: '/destinations/paris' },
-  { name: 'Roma, Italia', image: 'https://placehold.co/600x400.png', dataAiHint: 'Roma Coliseo', href: '/destinations/rome' },
-  { name: 'Kioto, Japón', image: 'https://placehold.co/600x400.png', dataAiHint: 'Kioto Templo', href: '/destinations/kyoto' },
-  { name: 'Nueva York, EE.UU.', image: 'https://placehold.co/600x400.png', dataAiHint: 'NuevaYork Skyline', href: '/destinations/new-york' },
+  { name: 'Roma', image: 'https://placehold.co/600x400.png', dataAiHint: 'Roma coliseo', href: '/activities?destination=Roma' },
+  { name: 'París', image: 'https://placehold.co/600x400.png', dataAiHint: 'París torre eiffel', href: '/activities?destination=París' },
+  { name: 'Madrid', image: 'https://placehold.co/600x400.png', dataAiHint: 'Madrid ciudad', href: '/activities?destination=Madrid' },
+  { name: 'Barcelona', image: 'https://placehold.co/600x400.png', dataAiHint: 'Barcelona sagrada familia', href: '/activities?destination=Barcelona' },
+  { name: 'Nueva York', image: 'https://placehold.co/600x400.png', dataAiHint: 'Nueva York estatua libertad', href: '/activities?destination=Nueva%20York' },
+  { name: 'Florencia', image: 'https://placehold.co/600x400.png', dataAiHint: 'Florencia catedral', href: '/activities?destination=Florencia' },
 ];
 
 export function PopularDestinations() {
   return (
-    <section>
+    <>
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground">Principales Destinos</h2>
-        <Button variant="link" asChild className="text-primary hover:text-primary/80">
-          <Link href="/destinations">
-            Ver Todos <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
+        <h2 className="text-3xl font-bold text-foreground">Principales destinos</h2>
+        {/* Este botón se moverá abajo de la sección de tarjetas */}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4"> {/* Ajustado a 3 columnas en md para que quepan 6 */}
         {destinations.map((dest) => (
-          <Card key={dest.name} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group border-0 bg-muted"> {/* Fondo de sección gris claro para la tarjeta, sin bordes */}
-            <CardHeader className="p-0 relative h-60 sm:h-72"> {/* Aumentar altura para imagen más grande */}
-              <Image
-                src={dest.image}
-                alt={`Imagen de ${dest.name}`}
-                layout="fill"
-                objectFit="cover"
-                className="group-hover:scale-105 transition-transform duration-300"
-                data-ai-hint={dest.dataAiHint}
-              />
-              {/* Nombre del destino superpuesto en la parte inferior */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 via-black/40 to-transparent">
-                <CardTitle className="text-xl text-white font-bold">{dest.name}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4 bg-card hidden"> {/* Contenido original oculto para estilo Civitatis, podría eliminarse */}
-              <Button variant="outline" asChild className="w-full mt-2">
-                <Link href={dest.href}>Explorar Actividades</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <Link key={dest.name} href={dest.href} legacyBehavior>
+            <a className="block group">
+              <Card className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 border-0 bg-card rounded-lg">
+                <CardHeader className="p-0 relative h-48 sm:h-60 md:h-72">
+                  <Image
+                    src={dest.image}
+                    alt={`Imagen de ${dest.name}`}
+                    layout="fill"
+                    objectFit="cover"
+                    className="group-hover:scale-105 transition-transform duration-300"
+                    data-ai-hint={dest.dataAiHint}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                    <CardTitle className="text-lg md:text-xl text-white font-bold group-hover:underline">{dest.name}</CardTitle>
+                  </div>
+                </CardHeader>
+                {/* No CardContent visible como en Civitatis */}
+              </Card>
+            </a>
+          </Link>
         ))}
       </div>
-       <div className="text-center mt-8">
-        <Button variant="outline" asChild className="border-primary text-primary hover:bg-primary/5">
+      <div className="text-center mt-10">
+        <Button variant="outline" asChild className="border-primary text-primary hover:bg-primary/5 hover:text-primary px-6 py-3 text-base">
           <Link href="/destinations">
-            Ver más destinos
+            Ver más destinos <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
       </div>
-    </section>
+    </>
   );
 }
