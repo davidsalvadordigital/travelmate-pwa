@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es"> {/* Cambiado a español */}
+    <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
         <AppLayout>
           {children}
