@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Frown, MapPin, CalendarDays, Star, MessageSquare, Users, ListFilter, LayoutGrid, CalendarPlus } from 'lucide-react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation'; // Import useSearchParams
 
 // Datos de ejemplo para actividades (actualizados con más campos)
 const activities: Activity[] = [
@@ -26,17 +27,21 @@ const destinationDetails = {
   region: "Región de París Isla de Francia", // Ejemplo
   stats: {
     activitiesCount: 120, // Ejemplo
-    travelersCount: "4.2M", 
+    travelersCount: "4.2M",
     reviewsCount: 167363, // Ejemplo
     rating: 9.1, // Ejemplo
   },
-  heroImage: "https://placehold.co/1600x500.png", 
+  heroImage: "https://placehold.co/1600x500.png",
   dataAiHint: "ciudad paris"
 };
 
 
-export default function ActivitiesPage({ searchParams }: { searchParams?: { destination?: string; type?: string } }) {
-  const currentDestinationName = searchParams?.destination || destinationDetails.name;
+export default function ActivitiesPage() { // Remover searchParams de las props
+  const searchParams = useSearchParams(); // Usar el hook
+  const destinationParam = searchParams.get('destination');
+  // const typeParam = searchParams.get('type'); // Si necesitas el tipo más adelante
+
+  const currentDestinationName = destinationParam || destinationDetails.name;
   // Para la demo, usamos los detalles de París si no hay destino en searchParams.
   // En una app real, buscaríamos los detalles del destino basado en currentDestinationName.
   const currentDestination = { ...destinationDetails, name: currentDestinationName };
@@ -44,7 +49,7 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
 
   const filteredActivities = activities.filter(activity => {
     let matches = true;
-    if (searchParams?.destination && activity.destination.toLowerCase() !== searchParams.destination.toLowerCase()) {
+    if (destinationParam && activity.destination.toLowerCase() !== destinationParam.toLowerCase()) {
       matches = false;
     }
     // La lógica de filtrado por tipo se moverá o se basará en los nuevos filtros
@@ -58,7 +63,7 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
         <Image
           src={currentDestination.heroImage}
           alt={`Fondo de ${currentDestination.name}`}
-          layout="fill"
+          fill // Cambiado layout="fill" a fill
           objectFit="cover"
           className="brightness-50"
           data-ai-hint={currentDestination.dataAiHint}
@@ -66,13 +71,13 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
         />
         <div className="relative z-10 p-8 text-white space-y-6 container mx-auto px-4"> {/* Contenedor para el texto */}
           <div className="text-sm">
-            <Link href="/" className="hover:underline">Travely</Link> &gt; 
-            <Link href="/destinations" className="hover:underline"> Destinos</Link> &gt; 
+            <Link href="/" className="hover:underline">Travely</Link> &gt;
+            <Link href="/destinations" className="hover:underline"> Destinos</Link> &gt;
             {/* Aquí podrían ir más niveles de breadcrumb si se implementa */}
             <span className="font-semibold"> {currentDestination.name}</span>
           </div>
           <h1 className="text-5xl font-bold">{currentDestination.name}</h1>
-          
+
           <Button variant="secondary" size="lg" className="bg-white text-primary hover:bg-gray-100">
             <CalendarPlus className="mr-2 h-5 w-5" /> Añade tus fechas
           </Button>
@@ -156,3 +161,5 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
     </div>
   );
 }
+
+    
