@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BadgeDollarSign, CheckCircle2, Search, SmilePlus, Users } from 'lucide-react';
+import { useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 const benefits = [
   { text: "Las mejores actividades", icon: CheckCircle2 },
@@ -14,13 +16,23 @@ const benefits = [
 ];
 
 export function HeroSection() {
+  const [searchInput, setSearchInput] = useState('');
+  const router = useRouter();
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (searchInput.trim()) {
+      router.push(`/activities?destination=${encodeURIComponent(searchInput.trim())}`);
+    }
+  };
+
   return (
-    <section className="relative h-[550px] md:h-[650px] overflow-hidden shadow-lg"> {/* Eliminado rounded-xl */}
+    <section className="relative h-[550px] md:h-[650px] overflow-hidden shadow-lg">
       <Image
         src="https://placehold.co/1600x900.png"
         alt="Impresionante destino de viaje con globos aerostáticos sobre templos antiguos al amanecer"
-        layout="fill"
-        objectFit="cover"
+        fill
+        style={{ objectFit: 'cover' }}
         quality={85}
         priority
         className="brightness-75"
@@ -33,13 +45,18 @@ export function HeroSection() {
         <p className="text-lg sm:text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl shadow-text">
           Visitas guiadas y excursiones en español por todo el mundo.
         </p>
-        <form className="w-full max-w-xl flex items-center gap-0 bg-white p-1.5 rounded-lg shadow-2xl">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="w-full max-w-xl flex items-center gap-0 bg-white p-1.5 rounded-lg shadow-2xl"
+        >
           <Search className="text-muted-foreground ml-3 mr-2 h-5 w-5" />
           <Input
             type="search"
             placeholder="¿A dónde vas a viajar?"
             className="flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base h-11"
             aria-label="Buscar destinos o actividades"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
           <Button type="submit" size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-md px-6">
             Buscar <ArrowRight className="ml-2 h-5 w-5" />

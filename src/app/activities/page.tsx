@@ -6,30 +6,32 @@ import { ActivityCard, type Activity } from '@/components/activities/activity-ca
 import { Filters, type FilterState } from '@/components/activities/filters';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Link from 'next/link';
-import { Frown, MapPin, CalendarDays, Star, MessageSquare, Users, ListFilter, LayoutGrid, CalendarPlus } from 'lucide-react';
+import { Frown, MapPin, CalendarDays, Star, MessageSquare, Users, ListFilter, LayoutGrid, CalendarPlus, CalendarIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
-// Datos de ejemplo para actividades (actualizados con más campos, incluyendo 'category')
 const allActivities: Activity[] = [
   { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas' },
   { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas' },
   { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas' },
   { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas' },
   { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones' },
-  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados' }, // Nueva categoría
+  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados' },
   { id: '7', title: 'Cata de Vinos Franceses en Le Marais', duration: '2 horas', rating: 9.2, opinions: 320, price: 75.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vino copas', destination: 'París', freeCancellation: true, language: 'Español, Inglés', isFree: false, category: 'Gastronomía' },
   { id: '8', title: 'Espectáculo Moulin Rouge con Cena', duration: '4 horas', rating: 8.9, opinions: 1250, price: 180.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Moulin Rouge', destination: 'París', freeCancellation: false, language: 'Internacional', isFree: false, category: 'Espectáculos' },
 ];
 
-// Simulación de datos para la cabecera del destino
 const destinationDetails = {
   name: "París",
   country: "Francia",
   region: "Región de París Isla de Francia",
   stats: {
-    activitiesCount: 120, // Este número podría ser dinámico basado en allActivities.length para el destino
+    activitiesCount: 120,
     travelersCount: "4.2M",
     reviewsCount: 167363,
     rating: 9.1,
@@ -46,21 +48,21 @@ const initialFilterState: FilterState = {
   selectedFeatures: [],
 };
 
-// Helper para convertir IDs de categoría de filtro a nombres de categoría de actividad
 const categoryIdToNameMapping: { [key: string]: string } = {
   'visitas-guiadas': 'Visitas guiadas',
   'entradas': 'Entradas',
   'excursiones': 'Excursiones',
   'gastronomia': 'Gastronomía',
   'espectaculos': 'Espectáculos',
-  // Añadir más mapeos si es necesario
 };
 
 
 export default function ActivitiesPage() {
   const searchParams = useSearchParams();
   const destinationParam = searchParams.get('destination');
-  const typeParam = searchParams.get('type'); // Para posible filtro inicial por tipo desde otra página
+  const typeParam = searchParams.get('type');
+
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(() => {
     const initialState = { ...initialFilterState };
@@ -81,19 +83,16 @@ export default function ActivitiesPage() {
     return allActivities.filter(activity => {
       let matches = true;
 
-      // Filtrar por destino (si se especifica en la URL)
       if (destinationParam && activity.destination.toLowerCase() !== destinationParam.toLowerCase()) {
         matches = false;
       }
 
-      // Filtrar por precio
-      if (activity.isFree && appliedFilters.priceRange[0] > 0) { // Si es gratis y el rango mínimo es > 0
+      if (activity.isFree && appliedFilters.priceRange[0] > 0) {
         matches = false;
       } else if (!activity.isFree && (activity.price < appliedFilters.priceRange[0] || activity.price > appliedFilters.priceRange[1])) {
         matches = false;
       }
-      
-      // Filtrar por categoría
+
       if (appliedFilters.selectedCategories.length > 0) {
         const activityCategoryName = activity.category;
         const selectedCategoryNames = appliedFilters.selectedCategories.map(id => categoryIdToNameMapping[id]).filter(Boolean);
@@ -102,23 +101,20 @@ export default function ActivitiesPage() {
         }
       }
 
-      // Filtrar por características
       if (appliedFilters.selectedFeatures.includes('freeCancellation') && !activity.freeCancellation) {
         matches = false;
       }
       if (appliedFilters.selectedFeatures.includes('spanishOnly') && !activity.language.toLowerCase().includes('español')) {
         matches = false;
       }
-      // Nota: Los filtros de 'wheelchairAccessible', 'petFriendly', 'hotelPickup' no se aplican
-      // porque no tenemos esos datos en el modelo Activity. Lo mismo para 'startTime' y 'durationRange'.
 
       return matches;
     });
-  }, [allActivities, destinationParam, appliedFilters]);
+  }, [destinationParam, appliedFilters]);
 
   return (
     <div className="space-y-8">
-      <section className="relative rounded-lg overflow-hidden shadow-lg">
+      <section className="relative rounded-b-lg overflow-hidden shadow-lg">
         <Image
           src={currentDestination.heroImage}
           alt={`Fondo de ${currentDestination.name}`}
@@ -135,10 +131,26 @@ export default function ActivitiesPage() {
             <span className="font-semibold"> {currentDestination.name}</span>
           </div>
           <h1 className="text-5xl font-bold">{currentDestination.name}</h1>
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="secondary" size="lg" className="bg-white text-primary hover:bg-gray-100">
+                <CalendarPlus className="mr-2 h-5 w-5" />
+                {selectedDate ? format(selectedDate, "PPP", { locale: es }) : "Añade tus fechas"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                initialFocus
+                locale={es}
+                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
+              />
+            </PopoverContent>
+          </Popover>
 
-          <Button variant="secondary" size="lg" className="bg-white text-primary hover:bg-gray-100">
-            <CalendarPlus className="mr-2 h-5 w-5" /> Añade tus fechas
-          </Button>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 pt-4 text-sm">
             <div className="flex items-center">
@@ -168,9 +180,24 @@ export default function ActivitiesPage() {
               <span className="font-semibold">Disponibilidad:</span>
               <Button variant="outline" size="sm">Hoy</Button>
               <Button variant="outline" size="sm">Mañana</Button>
-              <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5">
-                <CalendarDays className="mr-2 h-4 w-4"/>Fechas
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5">
+                    <CalendarIcon className="mr-2 h-4 w-4"/>
+                    {selectedDate ? format(selectedDate, "PPP", { locale: es }) : "Fechas"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    initialFocus
+                    locale={es}
+                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="text-muted-foreground">
               {filteredActivities.length} {filteredActivities.length === 1 ? 'excursión o actividad' : 'excursiones y actividades'} en {currentDestination.name}
