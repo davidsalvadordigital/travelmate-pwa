@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 export interface Activity {
   id: string;
   title: string;
-  duration: string;
+  duration: string; // Para mostrar al usuario, ej: "Aprox. 2 horas"
   rating: number;
   opinions: number;
   price: number;
@@ -27,6 +27,8 @@ export interface Activity {
   originalPrice?: number;
   category: string; 
   availableDates?: string[]; // Formato YYYY-MM-DD
+  startTimeNumeric?: number; // Hora de inicio en formato 24h (ej. 9, 14)
+  durationHoursNumeric?: number; // Duración en horas (ej. 1, 2.5, 4)
 }
 
 interface ActivityCardProps {

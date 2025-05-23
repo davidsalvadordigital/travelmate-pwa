@@ -24,14 +24,17 @@ dayAfterTomorrow.setDate(today.getDate() + 2);
 const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
 
 const allActivities: Activity[] = [
-  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-15', '2024-09-16'] },
-  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-17'] },
-  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDate(today), '2024-09-15', '2024-09-18'] },
-  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow)] },
-  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDate(dayAfterTomorrow), '2024-09-20'] },
-  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow)] }, // Traslados suelen ser más flexibles
-  { id: '7', title: 'Cata de Vinos Franceses en Le Marais', duration: '2 horas', rating: 9.2, opinions: 320, price: 75.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vino copas', destination: 'París', freeCancellation: true, language: 'Español, Inglés', isFree: false, category: 'Gastronomía', availableDates: ['2024-09-10', '2024-09-17', '2024-09-24'] },
-  { id: '8', title: 'Espectáculo Moulin Rouge con Cena', duration: '4 horas', rating: 8.9, opinions: 1250, price: 180.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Moulin Rouge', destination: 'París', freeCancellation: false, language: 'Internacional', isFree: false, category: 'Espectáculos', availableDates: [formatDate(tomorrow), '2024-09-12', '2024-09-19'] },
+  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-15', '2024-09-16'], startTimeNumeric: 14, durationHoursNumeric: 1 },
+  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-17'], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDate(today), '2024-09-15', '2024-09-18'], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
+  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow)], startTimeNumeric: 9, durationHoursNumeric: 2.5 },
+  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDate(dayAfterTomorrow), '2024-09-20'], startTimeNumeric: 8, durationHoursNumeric: 4 },
+  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow)] }, // Duración y hora de inicio no aplican tan directamente
+  { id: '7', title: 'Cata de Vinos Franceses en Le Marais', duration: '2 horas', rating: 9.2, opinions: 320, price: 75.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vino copas', destination: 'París', freeCancellation: true, language: 'Español, Inglés', isFree: false, category: 'Gastronomía', availableDates: ['2024-09-10', '2024-09-17', '2024-09-24'], startTimeNumeric: 18, durationHoursNumeric: 2 },
+  { id: '8', title: 'Espectáculo Moulin Rouge con Cena', duration: '4 horas', rating: 8.9, opinions: 1250, price: 180.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Moulin Rouge', destination: 'París', freeCancellation: false, language: 'Internacional', isFree: false, category: 'Espectáculos', availableDates: [formatDate(tomorrow), '2024-09-12', '2024-09-19'], startTimeNumeric: 20, durationHoursNumeric: 4 },
+  { id: '9', title: 'Tour Nocturno por París Iluminado', duration: '3 horas', rating: 9.0, opinions: 650, price: 45.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'parís noche', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow), '2024-09-21'], startTimeNumeric: 21, durationHoursNumeric: 3 },
+  { id: '10', title: 'Clase de Cocina Francesa', duration: '3.5 horas', rating: 9.5, opinions: 180, price: 95.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'cocina clase', destination: 'París', freeCancellation: true, language: 'Español, Francés', isFree: false, category: 'Gastronomía', availableDates: ['2024-09-11', '2024-09-18', '2024-09-25'], startTimeNumeric: 10, durationHoursNumeric: 3.5 },
+  { id: '11', title: 'Excursión de 2 días a Normandía y Playas del Desembarco', duration: '2 días', rating: 8.5, opinions: 450, price: 250.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'normandía playas', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: ['2024-10-01', '2024-10-15'], startTimeNumeric: 7, durationHoursNumeric: 48 }, // 2 días = 48 horas
 ];
 
 const destinationDetails = {
@@ -39,19 +42,19 @@ const destinationDetails = {
   country: "Francia",
   region: "Región de París Isla de Francia",
   stats: {
-    activitiesCount: 120,
+    activitiesCount: allActivities.length, // Actualizado para reflejar el total
     travelersCount: "4.2M",
     reviewsCount: 167363,
     rating: 9.1,
   },
-  heroImage: "https://placehold.co/1600x500.png", // Imagen de ejemplo más genérica para la cabecera
+  heroImage: "https://placehold.co/1600x500.png",
   dataAiHint: "ciudad paris"
 };
 
 const initialFilterState: FilterState = {
-  startTime: [0, 24],
-  priceRange: [0, 600],
-  durationRange: [1, 11],
+  startTime: [0, 24], // [minHour, maxHour]
+  priceRange: [0, 600], // [minPrice, maxPrice]
+  durationRange: [0, 10], // [minDurationHours, maxDurationHours], 0 para "cualquiera", 10 para "10+ horas"
   selectedCategories: [],
   selectedFeatures: [],
 };
@@ -62,22 +65,22 @@ const categoryIdToNameMapping: { [key: string]: string } = {
   'excursiones': 'Excursiones',
   'gastronomia': 'Gastronomía',
   'espectaculos': 'Espectáculos',
+  'traslados': 'Traslados',
 };
 
-// Función para normalizar cadenas (quitar acentos y convertir a minúsculas)
 const normalizeString = (str: string) => {
   if (!str) return "";
   return str
-    .normalize("NFD") // Descomponer caracteres acentuados
-    .replace(/[\u0300-\u036f]/g, "") // Eliminar marcas diacríticas
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 };
 
 
 export default function ActivitiesPage() {
-  const searchParams = useSearchParams();
-  const destinationParam = searchParams.get('destination');
-  const typeParam = searchParams.get('type');
+  const searchParamsHook = useSearchParams();
+  const destinationParam = searchParamsHook.get('destination');
+  const typeParam = searchParamsHook.get('type');
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
@@ -90,7 +93,8 @@ export default function ActivitiesPage() {
   });
 
   const currentDestinationName = destinationParam || destinationDetails.name;
-  const currentDestination = { ...destinationDetails, name: currentDestinationName };
+  const currentDestination = { ...destinationDetails, name: currentDestinationName, stats: {...destinationDetails.stats, activitiesCount: allActivities.filter(act => normalizeString(act.destination) === normalizeString(currentDestinationName)).length } };
+
 
   const handleFilterChange = useCallback((newFilters: FilterState) => {
     setAppliedFilters(newFilters);
@@ -98,18 +102,17 @@ export default function ActivitiesPage() {
 
   const filteredActivities = useMemo(() => {
     return allActivities.filter(activity => {
-      let matches = true;
-
       // Filtrar por destino (insensible a acentos y mayúsculas/minúsculas)
       if (destinationParam && normalizeString(activity.destination) !== normalizeString(destinationParam)) {
-        matches = false;
+        return false;
       }
 
       // Filtrar por precio
       if (activity.isFree && appliedFilters.priceRange[0] > 0) {
-        matches = false;
-      } else if (!activity.isFree && (activity.price < appliedFilters.priceRange[0] || activity.price > appliedFilters.priceRange[1])) {
-        matches = false;
+        return false;
+      }
+      if (!activity.isFree && (activity.price < appliedFilters.priceRange[0] || activity.price > appliedFilters.priceRange[1])) {
+        return false;
       }
 
       // Filtrar por categorías
@@ -117,36 +120,53 @@ export default function ActivitiesPage() {
         const activityCategoryName = activity.category;
         const selectedCategoryNames = appliedFilters.selectedCategories.map(id => categoryIdToNameMapping[id]).filter(Boolean);
         if (!selectedCategoryNames.includes(activityCategoryName)) {
-          matches = false;
+          return false;
         }
       }
 
       // Filtrar por características
       if (appliedFilters.selectedFeatures.includes('freeCancellation') && !activity.freeCancellation) {
-        matches = false;
+        return false;
       }
-      // Para "Solo actividades en español", buscamos la subcadena "español" (insensible a mayúsculas)
       if (appliedFilters.selectedFeatures.includes('spanishOnly') && !activity.language.toLowerCase().includes('español')) {
-        matches = false;
+        return false;
       }
-      // Aquí se añadirían otros filtros de características si los datos lo permiten
-
+      
       // Filtrar por fecha seleccionada
       if (selectedDate) {
         const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
         if (!activity.availableDates || !activity.availableDates.includes(formattedSelectedDate)) {
-          matches = false;
+          return false;
         }
       }
       
-      // Lógica para filtros de hora y duración (actualmente no implementada por falta de datos detallados)
-      // const activityStartTime = ... // Extraer hora de inicio de la actividad
-      // const activityDuration = ... // Extraer duración numérica de la actividad
-      // if (activityStartTime < appliedFilters.startTime[0] || activityStartTime > appliedFilters.startTime[1]) matches = false;
-      // if (activityDuration < appliedFilters.durationRange[0] || activityDuration > appliedFilters.durationRange[1]) matches = false;
+      // Filtrar por hora de inicio
+      if (activity.startTimeNumeric !== undefined) {
+        const [minStartTime, maxStartTime] = appliedFilters.startTime;
+        // Si el slider está en [0, 24], no se aplica filtro de hora
+        if (!(minStartTime === 0 && maxStartTime === 24)) {
+          if (activity.startTimeNumeric < minStartTime || activity.startTimeNumeric > maxStartTime) {
+            return false;
+          }
+        }
+      }
 
+      // Filtrar por duración
+      if (activity.durationHoursNumeric !== undefined) {
+        const [minDuration, maxDuration] = appliedFilters.durationRange;
+         // Si el slider está en [0, 10] (0 es "cualquiera", 10 es "10+"), no se aplica filtro por defecto si es 0.
+        if (minDuration > 0) { // Solo aplicar filtro si minDuration es mayor a 0 ("cualquiera")
+            if (maxDuration === 10) { // 10 en el slider significa "10 horas o más"
+                if (activity.durationHoursNumeric < minDuration) return false;
+            } else {
+                if (activity.durationHoursNumeric < minDuration || activity.durationHoursNumeric > maxDuration) {
+                    return false;
+                }
+            }
+        }
+      }
 
-      return matches;
+      return true;
     });
   }, [destinationParam, appliedFilters, selectedDate]);
 
@@ -155,7 +175,7 @@ export default function ActivitiesPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-0"> {/* Eliminado space-y-8 para que la cabecera pegue arriba */}
       <section className="relative rounded-b-lg overflow-hidden shadow-lg">
         <Image
           src={currentDestination.heroImage}
@@ -166,11 +186,10 @@ export default function ActivitiesPage() {
           data-ai-hint={currentDestination.dataAiHint}
           priority
         />
-        <div className="relative z-10 p-8 text-white space-y-6 container mx-auto px-4">
+        <div className="relative z-10 p-8 text-white space-y-6 container mx-auto px-4"> {/* Añadido py-8 aquí */}
           <div className="text-sm">
             <Link href="/" className="hover:underline">Travely</Link> &gt;
             <Link href="/destinations" className="hover:underline"> Destinos</Link> &gt;
-            {/* Ejemplo de migas de pan más detalladas, podrían ser dinámicas en una app real */}
             <Link href="/destinations?region=europa" className="hover:underline"> Europa</Link> &gt;
             <Link href="/destinations?country=francia" className="hover:underline"> Francia</Link> &gt;
             <span className="font-semibold"> {currentDestination.name}</span>
@@ -196,15 +215,14 @@ export default function ActivitiesPage() {
             </PopoverContent>
           </Popover>
 
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 pt-4 text-sm">
             <div className="flex items-center">
               <MapPin className="h-5 w-5 mr-2 text-primary-foreground/80" />
-              <span>{destinationDetails.stats.activitiesCount} inscripciones y actividades</span>
+              <span>{currentDestination.stats.activitiesCount} inscripciones y actividades</span>
             </div>
             <div className="flex items-center">
               <Users className="h-5 w-5 mr-2 text-primary-foreground/80" />
-              <span>{destinationDetails.stats.travelersCount} viajeros ya lo han disfrutado</span>
+              <span>{currentDestination.stats.travelersCount} viajeros ya lo han disfrutado</span>
             </div>
             <div className="flex items-center">
               <MessageSquare className="h-5 w-5 mr-2 text-primary-foreground/80" />
@@ -245,7 +263,7 @@ export default function ActivitiesPage() {
               </Popover>
             </div>
             <div className="text-muted-foreground">
-              {filteredActivities.length} {filteredActivities.length === 1 ? 'excursión o actividad' : 'excursiones y actividades'} en {currentDestination.name}
+              {filteredActivities.length} {filteredActivities.length === 1 ? 'excursión o actividad encontrada' : 'excursiones y actividades encontradas'}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
@@ -289,4 +307,3 @@ export default function ActivitiesPage() {
     </div>
   );
 }
-

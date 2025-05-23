@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,18 +12,17 @@ import { FilterX, SlidersHorizontal, CalendarDays, Clock, Tag, Settings2, Dollar
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export interface FilterState {
-  startTime: [number, number];
-  priceRange: [number, number];
-  durationRange: [number, number]; // En horas/días como en el slider. La interpretación es para el componente padre.
-  selectedCategories: string[]; // IDs de las categorías
-  selectedFeatures: string[]; // IDs de las características
-  // No incluimos disponibilidad por fecha aquí, ya que es más complejo y se manejaría a nivel de página.
+  startTime: [number, number]; // [minHour, maxHour] (0-24)
+  priceRange: [number, number]; // [minPrice, maxPrice]
+  durationRange: [number, number]; // [minDurationHours, maxDurationHours], 0 para "cualquiera", 10 para "10+ horas"
+  selectedCategories: string[]; 
+  selectedFeatures: string[]; 
 }
 
 const initialFilterState: FilterState = {
   startTime: [0, 24],
   priceRange: [0, 600],
-  durationRange: [1, 11],
+  durationRange: [0, 10], // 0 significa "cualquiera", 10 significará "10+ horas"
   selectedCategories: [],
   selectedFeatures: [],
 };
@@ -34,14 +33,16 @@ const categoriesOptions = [
   { id: 'excursiones', label: 'Excursiones de un día', count: 14 },
   { id: 'gastronomia', label: 'Gastronomía y enoturismo', count: 10 },
   { id: 'espectaculos', label: 'Espectáculos', count: 7 },
+  { id: 'traslados', label: 'Traslados', count: 3 },
 ];
 
 const featuresOptions = [
   { id: 'freeCancellation', label: 'Cancelación gratuita', count: 90 },
   { id: 'spanishOnly', label: 'Solo actividades en español', count: 104 },
-  { id: 'wheelchairAccessible', label: 'Accesible en silla de ruedas', count: 40 },
-  { id: 'petFriendly', label: 'Admite mascotas', count: 10 },
-  { id: 'hotelPickup', label: 'Recogida en el hotel', count: 3 },
+  // Las siguientes características no tienen datos en el mock actual para filtrar
+  // { id: 'wheelchairAccessible', label: 'Accesible en silla de ruedas', count: 40 },
+  // { id: 'petFriendly', label: 'Admite mascotas', count: 10 },
+  // { id: 'hotelPickup', label: 'Recogida en el hotel', count: 3 },
 ];
 
 interface FiltersProps {
@@ -51,7 +52,6 @@ interface FiltersProps {
 export function Filters({ onFilterChange }: FiltersProps) {
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
 
-  // Propagar cambios al componente padre
   useEffect(() => {
     onFilterChange(filters);
   }, [filters, onFilterChange]);
@@ -72,25 +72,24 @@ export function Filters({ onFilterChange }: FiltersProps) {
 
   const handleResetFilters = () => {
     setFilters(initialFilterState);
-    // onFilterChange(initialFilterState); // useEffect ya se encarga de esto
   };
   
-  // Funciones para formatear las etiquetas de los sliders
   const formatStartTimeLabel = (value: [number, number]) => {
     if (value[0] === 0 && value[1] === 24) return "Cualquier hora";
     return `${value[0]}:00h - ${value[1]}:00h`;
   };
 
   const formatPriceLabel = (value: [number, number]) => {
-    const minPrice = value[0] === 0 ? "Gratis" : `€${value[0]}`;
-    return `${minPrice} - €${value[1]}`;
+    const minPrice = value[0] === 0 ? "Gratis" : `US$${value[0]}`;
+    if (value[1] === 600) return `${minPrice} - US$600+`;
+    return `${minPrice} - US$${value[1]}`;
   };
 
   const formatDurationLabel = (value: [number, number]) => {
-    // Asumimos que el slider de duración puede representar horas o días
-    // Esta es una simplificación. Una implementación real necesitaría unidades más claras.
-    if (value[0] === 1 && value[1] === 11) return "Cualquier duración"; // Ejemplo de "todos"
-    return `${value[0]}h - ${value[1]}${value[1] > 1 ? ' días' : ' día'}`; // Simplificación
+    if (value[0] === 0 && value[1] === 10) return "Cualquier duración";
+    if (value[0] === 0 && value[1] < 10) return `Hasta ${value[1]}h`;
+    if (value[1] === 10) return `${value[0]}h o más`;
+    return `${value[0]}h - ${value[1]}h`;
   };
 
 
@@ -110,8 +109,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
                 <CalendarDays className="h-5 w-5 mr-2 text-primary" /> Disponibilidad
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-3">
-              <p className="text-xs text-muted-foreground">La selección de fechas se realiza en la cabecera.</p>
-              {/* Los botones "Hoy", "Mañana" podrían ser funcionales en una versión más avanzada */}
+              <p className="text-xs text-muted-foreground">La selección de fechas se realiza en la cabecera de la página.</p>
             </AccordionContent>
           </AccordionItem>
           
@@ -154,7 +152,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
                     />
                     <Label htmlFor={category.id} className="text-sm font-normal cursor-pointer">{category.label}</Label>
                   </div>
-                  {category.count !== null && <span className="text-xs text-muted-foreground">{category.count}</span>}
+                  {/* <span className="text-xs text-muted-foreground">{category.count}</span> */}
                 </div>
               ))}
             </AccordionContent>
@@ -177,7 +175,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
                     />
                     <Label htmlFor={feature.id} className="text-sm font-normal cursor-pointer">{feature.label}</Label>
                   </div>
-                  {feature.count !== null && <span className="text-xs text-muted-foreground">{feature.count}</span>}
+                  {/* <span className="text-xs text-muted-foreground">{feature.count}</span> */}
                 </div>
               ))}
             </AccordionContent>
@@ -196,7 +194,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
               <Slider
                 id="price-range"
                 min={0}
-                max={600}
+                max={600} // El valor máximo podría ser dinámico en una app real
                 step={10}
                 value={filters.priceRange}
                 onValueChange={(value) => handleSliderChange('priceRange', value as [number, number])}
@@ -209,7 +207,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
 
           <AccordionItem value="item-6" className="border-b-0">
             <AccordionTrigger className="py-3 text-md font-semibold hover:no-underline">
-                <Hourglass className="h-5 w-5 mr-2 text-primary" /> Duración
+                <Hourglass className="h-5 w-5 mr-2 text-primary" /> Duración (horas)
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4">
               <Label htmlFor="duration-range" className="text-xs text-muted-foreground block mb-2 text-center">
@@ -217,12 +215,12 @@ export function Filters({ onFilterChange }: FiltersProps) {
               </Label>
               <Slider
                 id="duration-range"
-                min={1} 
-                max={11} 
+                min={0} // 0 para "cualquier duración"
+                max={10} // 10 para "10+ horas"
                 step={1}
                 value={filters.durationRange}
                 onValueChange={(value) => handleSliderChange('durationRange', value as [number, number])}
-                aria-label="Rango de duración"
+                aria-label="Rango de duración en horas"
               />
             </AccordionContent>
           </AccordionItem>
@@ -231,7 +229,6 @@ export function Filters({ onFilterChange }: FiltersProps) {
         <Separator className="my-4" />
 
         <div className="flex flex-col space-y-2">
-          {/* El botón Aplicar se elimina, los filtros se aplican al cambiar */}
           <Button onClick={handleResetFilters} variant="outline" className="w-full">
             <FilterX className="mr-2 h-4 w-4" /> Resetear Filtros
           </Button>
