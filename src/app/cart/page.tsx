@@ -1,20 +1,20 @@
 
-"use client"; // Convertir a Client Component para usar hooks
+"use client"; 
 
-import { useState } from 'react'; // Importar useState para manejar estado del carrito
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, XCircle, ArrowRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useToast } from "@/hooks/use-toast"; // Importar useToast
+import { useToast } from "@/hooks/use-toast"; 
 
 interface CartItem {
   id: string;
   title: string;
   image: string;
   dataAiHint: string;
-  date: string;
+  date: string; // Podría ser tipo Date para más flexibilidad, pero string es simple para mock
   time: string;
   participants: number;
   pricePerParticipant: number;
@@ -46,26 +46,49 @@ const initialMockCartItems: CartItem[] = [
   }
 ];
 
-const showMockData = true;
+// Control para decidir si mostrar datos de ejemplo o empezar con carrito vacío
+const showMockDataOnLoad = true; 
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(showMockData ? initialMockCartItems : []);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
+
+  // Cargar datos de ejemplo solo una vez al montar el componente si showMockDataOnLoad es true
+  useEffect(() => {
+    if (showMockDataOnLoad) {
+      setCartItems(initialMockCartItems);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // El array de dependencias vacío asegura que esto solo se ejecute al montar
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.pricePerParticipant * item.participants, 0);
   const currency = cartItems.length > 0 ? cartItems[0].currency : 'US$';
 
   const handleRemoveItem = (itemId: string, itemTitle: string) => {
-    // En una app real, aquí se actualizaría el estado global o se llamaría a una API
-    // Por ahora, solo mostramos un toast y filtramos el mock localmente (si quieres simularlo completamente)
-    // setCartItems(prevItems => prevItems.filter(item => item.id !== itemId)); // Descomentar para simular eliminación real del UI
-    
+    setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
     toast({
       title: "Artículo Eliminado",
-      description: `"${itemTitle}" se ha eliminado de tu carrito. (Simulación)`,
-      variant: "default", // O 'destructive' si prefieres
+      description: `"${itemTitle}" se ha eliminado de tu carrito.`,
+      variant: "default", 
     });
-    console.log(`Simulación: Eliminar artículo ${itemId} del carrito.`);
+  };
+
+  const handleProceedToPayment = () => {
+    if (cartItems.length === 0) {
+      toast({
+        title: "Carrito Vacío",
+        description: "Añade actividades a tu carrito antes de proceder al pago.",
+        variant: "destructive",
+      });
+      return;
+    }
+    // Lógica de pago (simulada con un toast por ahora)
+    toast({
+      title: "Procesando Pago...",
+      description: "Esta funcionalidad aún no está implementada. ¡Gracias por tu comprensión!",
+      variant: "default"
+    });
+    console.log("Simulación: Procediendo al pago con los siguientes artículos:", cartItems);
   };
 
   return (
@@ -89,8 +112,8 @@ export default function CartPage() {
                       <Image
                         src={item.image}
                         alt={item.title}
-                        fill // Cambiado de layout="fill" a fill
-                        objectFit="cover"
+                        fill 
+                        style={{ objectFit: 'cover' }}
                         data-ai-hint={item.dataAiHint}
                       />
                     </div>
@@ -106,7 +129,7 @@ export default function CartPage() {
                       variant="ghost" 
                       size="icon" 
                       className="text-destructive hover:bg-destructive/10 self-start sm:self-center shrink-0"
-                      onClick={() => handleRemoveItem(item.id, item.title)} // Añadir onClick
+                      onClick={() => handleRemoveItem(item.id, item.title)} 
                       aria-label="Eliminar del carrito"
                     >
                       <Trash2 className="h-5 w-5" />
@@ -124,16 +147,21 @@ export default function CartPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Subtotal:</span>
+                    <span>Subtotal ({cartItems.length} artículo{cartItems.length !== 1 ? 's':''}):</span>
                     <span>{subtotal.toFixed(2)} {currency}</span>
                   </div>
+                  {/* Aquí podrían ir descuentos, impuestos, etc. */}
                   <div className="flex justify-between font-semibold text-lg text-foreground border-t pt-3 mt-3">
                     <span>Total Estimado:</span>
                     <span className="text-primary">{subtotal.toFixed(2)} {currency}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-3">
-                  <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                    onClick={handleProceedToPayment}
+                  >
                     Proceder al Pago <ArrowRight className="ml-2 h-4 w-4"/>
                   </Button>
                   <Button variant="outline" asChild className="w-full">
