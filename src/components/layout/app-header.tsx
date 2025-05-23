@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Menu, MapPin, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign, ArrowRight, Search, Heart, Star, Clock, Languages, Ticket, CheckCircle2, BadgeDollarSign, SmilePlus, Users } from 'lucide-react';
+import { Menu, MapPin, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign, ArrowRight, Search, Heart } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState, useRef, useCallback, type FormEvent } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -14,7 +14,7 @@ import { SearchSuggestions, type Suggestion, type DestinationSuggestion, type Ac
 import { format } from 'date-fns';
 import { useCart } from '@/context/cart-context';
 
-// TEMPORAL: Copia de datos y función de normalización para prototipado en AppHeader
+// TEMPORAL: Datos para búsqueda en AppHeader
 const todayHeader = new Date();
 const tomorrowHeader = new Date(todayHeader);
 tomorrowHeader.setDate(todayHeader.getDate() + 1);
@@ -23,7 +23,6 @@ dayAfterTomorrowHeader.setDate(todayHeader.getDate() + 2);
 
 const formatDateHeaderData = (date: Date): string => format(date, 'yyyy-MM-dd');
 
-// Datos de ejemplo más acotados para el header (ajustados con campos numéricos)
 const allActivitiesDataHeader: Activity[] = [
   { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader)], startTimeNumeric: 14, durationHoursNumeric: 1  },
   { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
@@ -31,7 +30,6 @@ const allActivitiesDataHeader: Activity[] = [
   { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(todayHeader)], startTimeNumeric: 9, durationHoursNumeric: 3  },
   { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
 ];
-
 
 const normalizeStringHeader = (str: string) => {
   if (!str) return "";
@@ -56,7 +54,7 @@ const desktopUtilityItems = [
 
 const desktopAuthButtons = [
   { id: 'login', href: '/login', label: 'Iniciar Sesión', styleClass: 'bg-white text-primary hover:bg-slate-200 focus-visible:ring-white' },
-  { id: 'signup', href: '/signup', label: 'Regístrate', styleClass: 'border-white text-white hover:bg-white hover:text-primary focus-visible:ring-white', variant: 'outline' as const },
+  { id: 'signup', href: '/signup', label: 'Regístrate', styleClass: 'bg-transparent border-white text-white hover:bg-white hover:text-primary focus-visible:ring-white', variant: 'outline' as const },
 ];
 
 
@@ -285,18 +283,18 @@ function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; 
           onClick={onLinkClick}
         >
           <Link href="/login">
-            <LogIn className="mr-2 h-5 w-5" />
+            <LogIn className={`${iconClassBase} text-primary`} /> {/* Icono rosa */}
             Iniciar Sesión
           </Link>
         </Button>
         <Button
           asChild
           variant="outline"
-          className="w-full justify-center text-lg py-3 rounded-md border-white text-white hover:bg-white hover:text-primary"
+          className="w-full justify-center text-lg py-3 rounded-md bg-transparent border-white text-white hover:bg-white hover:text-primary group"
           onClick={onLinkClick}
         >
           <Link href="/signup">
-            <UserPlus className="mr-2 h-5 w-5" />
+            <UserPlus className={`${iconClassBase} group-hover:text-primary`} /> {/* Icono se vuelve rosa en hover */}
             Regístrate
           </Link>
         </Button>
@@ -334,43 +332,40 @@ export function AppHeader() {
     }
     setHeaderLoadingSuggestions(true);
 
-    // Simular un pequeño retraso para la carga
-    // setTimeout(() => { // Removido para evitar complejidad innecesaria en este punto
-      const normalizedQuery = normalizeStringHeader(query);
+    const normalizedQuery = normalizeStringHeader(query);
 
-      const destinationCounts: { [key: string]: number } = {};
-      allActivitiesDataHeader.forEach(activity => {
-        if (normalizeStringHeader(activity.destination).includes(normalizedQuery)) {
-          destinationCounts[activity.destination] = (destinationCounts[activity.destination] || 0) + 1;
-        }
-      });
+    const destinationCounts: { [key: string]: number } = {};
+    allActivitiesDataHeader.forEach(activity => {
+      if (normalizeStringHeader(activity.destination).includes(normalizedQuery)) {
+        destinationCounts[activity.destination] = (destinationCounts[activity.destination] || 0) + 1;
+      }
+    });
 
-      const destSuggestions: DestinationSuggestion[] = Object.entries(destinationCounts)
-        .map(([name, count]) => ({
-          type: 'destination' as const,
-          name,
-          activityCount: count,
-          href: `/activities?destination=${encodeURIComponent(name)}`,
-        }))
-        .sort((a, b) => b.activityCount - a.activityCount)
-        .slice(0, 3);
+    const destSuggestions: DestinationSuggestion[] = Object.entries(destinationCounts)
+      .map(([name, count]) => ({
+        type: 'destination' as const,
+        name,
+        activityCount: count,
+        href: `/activities?destination=${encodeURIComponent(name)}`,
+      }))
+      .sort((a, b) => b.activityCount - a.activityCount)
+      .slice(0, 3);
 
-      const actSuggestions: ActivitySuggestionItem[] = allActivitiesDataHeader
-        .filter(activity => normalizeStringHeader(activity.title).includes(normalizedQuery))
-        .map(activity => ({
-          type: 'activity' as const,
-          id: activity.id,
-          title: activity.title,
-          destination: activity.destination,
-          href: `/activities/${activity.id}`,
-        }))
-        .slice(0, 3);
+    const actSuggestions: ActivitySuggestionItem[] = allActivitiesDataHeader
+      .filter(activity => normalizeStringHeader(activity.title).includes(normalizedQuery))
+      .map(activity => ({
+        type: 'activity' as const,
+        id: activity.id,
+        title: activity.title,
+        destination: activity.destination,
+        href: `/activities/${activity.id}`,
+      }))
+      .slice(0, 3);
 
-      const combinedSuggestions = [...destSuggestions, ...actSuggestions];
-      setHeaderSuggestions(combinedSuggestions);
-      setShowHeaderSuggestions(combinedSuggestions.length > 0 || query.trim().length > 0);
-      setHeaderLoadingSuggestions(false);
-    // }, 150); // Pequeño retraso simulado para UX
+    const combinedSuggestions = [...destSuggestions, ...actSuggestions];
+    setHeaderSuggestions(combinedSuggestions);
+    setShowHeaderSuggestions(combinedSuggestions.length > 0 || query.trim().length > 0);
+    setHeaderLoadingSuggestions(false);
   }, []);
 
   useEffect(() => {
@@ -413,7 +408,7 @@ export function AppHeader() {
   const handleHeaderSuggestionClick = useCallback(() => {
     setShowHeaderSuggestions(false);
     setHeaderSearchInput('');
-    setSheetOpen(false); // Cerrar sheet si está abierto en móvil
+    setSheetOpen(false); 
   }, []);
 
   const handleHeaderSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -422,7 +417,7 @@ export function AppHeader() {
       router.push(`/activities?q=${encodeURIComponent(headerSearchInput.trim())}`);
       setShowHeaderSuggestions(false);
       setHeaderSearchInput('');
-      setSheetOpen(false); // Cerrar sheet si está abierto en móvil
+      setSheetOpen(false); 
     }
   };
 
@@ -446,23 +441,25 @@ export function AppHeader() {
           <div className="flex items-center">
             <Logo />
           </div>
-          <div className="h-8 w-8 bg-primary-foreground/20 rounded-md animate-pulse md:hidden" />
+          {/* Skeleton para el lado derecho del header en desktop */}
           <div className="hidden md:flex items-center space-x-1 md:space-x-1.5 lg:space-x-2">
             {pathname !== '/' && (
               <div className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative">
-                <div className="h-9 sm:h-10 bg-white/20 rounded-full animate-pulse" />
+                <div className="h-9 sm:h-10 bg-primary/80 rounded-full animate-pulse" /> {/* Placeholder para buscador */}
               </div>
             )}
-            <div className="h-9 sm:h-10 w-28 bg-white/90 rounded-full animate-pulse" /> {/* Iniciar Sesión */}
-            <div className="h-9 sm:h-10 w-28 border border-white rounded-full animate-pulse" /> {/* Regístrate */}
+            <div className="h-9 sm:h-10 w-28 bg-white/20 rounded-full animate-pulse" /> {/* Iniciar Sesión */}
+            <div className="h-9 sm:h-10 w-28 border border-white/20 rounded-full animate-pulse" /> {/* Regístrate */}
             
-            <div className="h-9 sm:h-10 w-24 bg-primary-foreground/20 rounded-md animate-pulse" /> {/* Idioma */}
-            <div className="h-9 sm:h-10 w-16 bg-primary-foreground/20 rounded-md animate-pulse" /> {/* Moneda */}
-            <div className="h-9 sm:h-10 w-9 bg-primary-foreground/20 rounded-md animate-pulse" /> {/* Ayuda */}
-            <div className="h-9 sm:h-10 w-9 bg-primary-foreground/20 rounded-md animate-pulse relative"> {/* Carrito */}
-              <div className="absolute -top-1 -right-1 bg-white text-primary text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center opacity-50 animate-pulse">?</div>
+            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-md animate-pulse" /> {/* Idioma */}
+            <div className="h-9 sm:h-10 w-16 bg-primary/80 rounded-md animate-pulse" /> {/* Moneda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse" /> {/* Ayuda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse relative"> {/* Carrito */}
+              <div className="absolute -top-1 -right-1 bg-white/50 text-primary text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center opacity-50 animate-pulse">?</div>
             </div>
           </div>
+          {/* Skeleton para el icono de menú en móvil */}
+          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden" />
         </div>
       </header>
     );
@@ -516,5 +513,3 @@ export function AppHeader() {
     </header>
   );
 }
-
-    
