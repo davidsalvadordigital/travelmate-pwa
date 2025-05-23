@@ -2,14 +2,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea'; // Asegúrate de tener este componente
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Mail, Phone, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ContactPage() {
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 py-8"> {/* Añadido py-8 */}
       <Card className="shadow-lg rounded-lg">
         <CardHeader className="text-center">
           <div className="flex flex-col items-center mb-2">

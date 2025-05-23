@@ -39,13 +39,12 @@ const mockActivity: Activity & {
     { user: 'Juan D.', rating: 4, comment: 'Gran experiencia, aunque un poco concurrido en la cima.', date: '2024-07-10' },
     { user: 'Laura M.', rating: 4.5, comment: 'Vale la pena. El guía nos contó muchas anécdotas.', date: '2024-07-05' },
   ],
-  // Campos añadidos para que coincida con el tipo Activity de activity-card.tsx
-  opinions: 123, // Ejemplo
-  price: 65, // Ejemplo
-  currency: '€', // Ejemplo
-  freeCancellation: true, // Ejemplo
-  language: 'Español, Inglés', // Ejemplo
-  isFree: false, // Ejemplo
+  opinions: 123,
+  price: 65,
+  currency: '€',
+  freeCancellation: true,
+  language: 'Español, Inglés',
+  isFree: false,
 };
 
 
@@ -57,7 +56,7 @@ export default function ActivityDetailPage({ params }: { params: { id: string } 
   }
 
   return (
-    <div className="container mx-auto px-4"> {/* Eliminado py-8, gestionado por AppLayout */}
+    <div className="container mx-auto px-4 py-8"> {/* Añadido py-8 */}
       <Card className="mb-6 shadow-lg overflow-hidden rounded-lg">
         <ImageGallery images={activity.images} />
       </Card>

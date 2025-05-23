@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, XCircle, ArrowRight, Trash2 } from 'lucide-react'; // Trash2 para eliminar ítem
+import { ShoppingCart, XCircle, ArrowRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -39,9 +39,9 @@ export default function CartPage() {
   const currency = cartItems.length > 0 ? cartItems[0].currency : 'US$';
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 py-8"> {/* Añadido py-8 */}
       <div className="space-y-8">
-        <CardHeader className="px-0 pt-0"> {/* Para alinear con el estilo del resto de la página */}
+        <CardHeader className="px-0 pt-0">
           <div className="flex items-center mb-2">
             <ShoppingCart className="h-8 w-8 text-primary mr-3"/>
             <CardTitle className="text-3xl font-bold text-primary">Tu Carrito de Compras</CardTitle>

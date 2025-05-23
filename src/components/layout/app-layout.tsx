@@ -11,7 +11,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen">
       <AppHeader />
-      <main className="flex-grow py-8"> {/* Eliminado container mx-auto px-4 */}
+      <main className="flex-grow"> {/* Eliminado py-8 */}
         {children}
       </main>
       <AppFooter />
