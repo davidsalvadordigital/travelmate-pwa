@@ -3,13 +3,13 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'; // SheetTrigger añadido aquí
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Menu, MapPin, Search as SearchIconLucide, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign, ArrowRight, Search } from 'lucide-react';
+import { Menu, MapPin, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign, ArrowRight, Search, Heart, Star, Clock, Languages, Ticket, CheckCircle2, BadgeDollarSign, SmilePlus, Users } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState, useRef, useCallback, type FormEvent } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import type { Activity } from '@/components/activities/activity-card';
+import type { Activity } from '@/components/activities/activity-card'; // Assuming Activity interface is here
 import { SearchSuggestions, type Suggestion, type DestinationSuggestion, type ActivitySuggestionItem } from '@/components/home/search-suggestions';
 import { format } from 'date-fns';
 import { useCart } from '@/context/cart-context';
@@ -23,7 +23,7 @@ dayAfterTomorrowHeader.setDate(todayHeader.getDate() + 2);
 
 const formatDateHeaderData = (date: Date): string => format(date, 'yyyy-MM-dd');
 
-// Datos de ejemplo más acotados para el header
+// Datos de ejemplo más acotados para el header (ajustados con campos numéricos)
 const allActivitiesDataHeader: Activity[] = [
   { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader)], startTimeNumeric: 14, durationHoursNumeric: 1  },
   { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
@@ -44,7 +44,7 @@ const normalizeStringHeader = (str: string) => {
 
 const mainNavItemsForMobile = [
   { href: '/destinations', label: 'Destinos', icon: MapPin },
-  { href: '/activities', label: 'Actividades', icon: SearchIconLucide },
+  { href: '/activities', label: 'Actividades', icon: Search },
   { href: '/bookings', label: 'Mis Reservas', icon: BookMarked },
 ];
 
@@ -52,7 +52,6 @@ const desktopUtilityItems = [
   { id: 'lang-selector', label: 'Español', icon: Globe, dropdownIcon: ChevronDown, href: '#', ariaLabel: 'Seleccionar Idioma' },
   { id: 'currency-selector', label: 'US$', icon: DollarSign, dropdownIcon: ChevronDown, href: '#', ariaLabel: 'Seleccionar Moneda' },
   { id: 'help', href: '/help', label: 'Ayuda', icon: HelpCircle, isIconOnly: true, ariaLabel: 'Centro de Ayuda' },
-  // Cart icon will be handled separately to include itemCount
 ];
 
 const desktopAuthButtons = [
@@ -63,8 +62,10 @@ const desktopAuthButtons = [
 
 function Logo() {
   return (
-    <Link href="/" className="text-3xl font-bold text-primary-foreground hover:opacity-80 transition-opacity" aria-label="Página de inicio de Travely">
-      Travely
+    <Link href="/" passHref legacyBehavior>
+      <a className="text-3xl font-bold text-primary-foreground hover:opacity-80 transition-opacity" aria-label="Página de inicio de Travely">
+        Travely
+      </a>
     </Link>
   );
 }
@@ -82,9 +83,9 @@ interface DesktopSearchFormProps {
   wrapperRef: React.RefObject<HTMLDivElement>;
 }
 
-function DesktopSearchForm({ 
-  value, onChange, onFocus, onSubmit, 
-  suggestions, searchTerm, onSuggestionClick, loading, showSuggestions, wrapperRef 
+function DesktopSearchForm({
+  value, onChange, onFocus, onSubmit,
+  suggestions, searchTerm, onSuggestionClick, loading, showSuggestions, wrapperRef
 }: DesktopSearchFormProps) {
   return (
     <form
@@ -134,10 +135,10 @@ function DesktopNav({ onLinkClick, itemCount, headerSearchProps }: { onLinkClick
           onClick={onLinkClick}
           className={`rounded-full px-3 py-1.5 h-9 sm:h-10 text-xs sm:text-sm ${
             item.styleType === 'filled'
-              ? 'bg-white/90 text-primary hover:bg-white' 
+              ? 'bg-white/90 text-primary hover:bg-white'
               : 'border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary'
           }`}
-          variant={item.styleType === 'outlined' ? 'default' : 'outline'}
+          variant={item.styleType === 'outlined' ? 'outline' : 'default'}
         >
           <Link href={item.href}>{item.label}</Link>
         </Button>
@@ -221,7 +222,7 @@ function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; 
           </Link>
         </Button>
       ))}
-      
+
       <div className="pt-3 border-t border-primary-foreground/20 mt-3" />
 
       {[
@@ -243,10 +244,10 @@ function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; 
       ))}
 
       <div className="pt-3 border-t border-primary-foreground/20 mt-3" />
-      
+
       {[
         { href: '/help', label: 'Ayuda', icon: HelpCircle, ariaLabel: 'Centro de Ayuda' },
-      ].map((item) => ( 
+      ].map((item) => (
         <Button
           key={item.label}
           variant="ghost"
@@ -402,7 +403,7 @@ export function AppHeader() {
       setShowHeaderSuggestions(false);
     }
   };
-  
+
   const handleHeaderInputFocus = () => {
     if (headerSearchInput.trim() !== '' && headerSuggestions.length > 0) {
       setShowHeaderSuggestions(true);
@@ -412,7 +413,7 @@ export function AppHeader() {
   const handleHeaderSuggestionClick = useCallback(() => {
     setShowHeaderSuggestions(false);
     setHeaderSearchInput('');
-    setSheetOpen(false); 
+    setSheetOpen(false);
   }, []);
 
   const handleHeaderSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -446,18 +447,18 @@ export function AppHeader() {
           <div className="flex items-center">
             <Logo />
           </div>
-          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div> {/* Placeholder para icono de menú */}
+          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden" /> {/* Placeholder para icono de menú */}
           <div className="hidden md:flex items-center space-x-1 md:space-x-1.5 lg:space-x-2">
              {/* Placeholder para el buscador condicional */}
             <div className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative">
-              <div className="h-9 sm:h-10 bg-primary/80 rounded-full animate-pulse"></div>
+              <div className="h-9 sm:h-10 bg-primary/80 rounded-full animate-pulse" />
             </div>
-            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Iniciar Sesión */}
-            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Regístrate */}
-            <div className="h-9 sm:h-10 w-20 bg-primary/80 rounded-md animate-pulse"></div> {/* Idioma */}
-            <div className="h-9 sm:h-10 w-16 bg-primary/80 rounded-md animate-pulse"></div> {/* Moneda */}
-            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse"></div> {/* Ayuda */}
-            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse"></div> {/* Carrito */}
+            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse" /> {/* Iniciar Sesión */}
+            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse" /> {/* Regístrate */}
+            <div className="h-9 sm:h-10 w-20 bg-primary/80 rounded-md animate-pulse" /> {/* Idioma */}
+            <div className="h-9 sm:h-10 w-16 bg-primary/80 rounded-md animate-pulse" /> {/* Moneda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse" /> {/* Ayuda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse" /> {/* Carrito */}
           </div>
         </div>
       </header>
@@ -472,7 +473,7 @@ export function AppHeader() {
         <div className="flex items-center">
           <Logo />
         </div>
-        
+
         {isMobile ? (
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
@@ -482,7 +483,7 @@ export function AppHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[360px] bg-primary text-primary-foreground p-0 flex flex-col">
               <SheetHeader className="p-4 border-b border-primary-foreground/20">
-                <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">Menú</SheetTitle>
+                <SheetTitle>Menú</SheetTitle> {/* Screen reader accessible title */}
               </SheetHeader>
               <div className="flex-grow overflow-y-auto">
                 <MobileNavLinks onLinkClick={() => setSheetOpen(false)} itemCount={itemCount} />
@@ -490,9 +491,9 @@ export function AppHeader() {
             </SheetContent>
           </Sheet>
         ) : (
-          <DesktopNav 
-            onLinkClick={() => setSheetOpen(false)} 
-            itemCount={itemCount} 
+          <DesktopNav
+            onLinkClick={() => setSheetOpen(false)}
+            itemCount={itemCount}
             headerSearchProps={{
               show: showHeaderSearch,
               value: headerSearchInput,
@@ -512,4 +513,3 @@ export function AppHeader() {
     </header>
   );
 }
-
