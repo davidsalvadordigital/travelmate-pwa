@@ -3,16 +3,16 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'; // SheetTrigger añadido aquí
 import { Input } from '@/components/ui/input';
-import { Menu, MapPin, Search as SearchIconLucide, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign } from 'lucide-react';
+import { Menu, MapPin, Search as SearchIconLucide, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign, ArrowRight, Search } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState, useRef, useCallback, type FormEvent } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import type { Activity } from '@/components/activities/activity-card';
 import { SearchSuggestions, type Suggestion, type DestinationSuggestion, type ActivitySuggestionItem } from '@/components/home/search-suggestions';
 import { format } from 'date-fns';
-import { useCart } from '@/context/cart-context'; // Importar useCart
+import { useCart } from '@/context/cart-context';
 
 // TEMPORAL: Copia de datos y función de normalización para prototipado en AppHeader
 const todayHeader = new Date();
@@ -23,15 +23,15 @@ dayAfterTomorrowHeader.setDate(todayHeader.getDate() + 2);
 
 const formatDateHeaderData = (date: Date): string => format(date, 'yyyy-MM-dd');
 
+// Datos de ejemplo más acotados para el header
 const allActivitiesDataHeader: Activity[] = [
-  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader), formatDateHeaderData(dayAfterTomorrowHeader), '2024-09-15', '2024-09-16'], startTimeNumeric: 14, durationHoursNumeric: 1 },
-  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(tomorrowHeader), formatDateHeaderData(dayAfterTomorrowHeader), '2024-09-17'], startTimeNumeric: 10, durationHoursNumeric: 3 },
-  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), '2024-09-15', '2024-09-18'], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
-  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 9, durationHoursNumeric: 2.5 },
-  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDateHeaderData(dayAfterTomorrowHeader), '2024-09-20'], startTimeNumeric: 8, durationHoursNumeric: 4 },
-  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 9, durationHoursNumeric: 3 },
-  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(dayAfterTomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader)], startTimeNumeric: 14, durationHoursNumeric: 1  },
+  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(dayAfterTomorrowHeader)], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
+  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(todayHeader)], startTimeNumeric: 9, durationHoursNumeric: 3  },
+  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
 ];
+
 
 const normalizeStringHeader = (str: string) => {
   if (!str) return "";
@@ -69,9 +69,64 @@ function Logo() {
   );
 }
 
-function DesktopNav({ onLinkClick, itemCount }: { onLinkClick?: () => void; itemCount: number }) {
+interface DesktopSearchFormProps {
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onFocus: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  suggestions: Suggestion[];
+  searchTerm: string;
+  onSuggestionClick: () => void;
+  loading: boolean;
+  showSuggestions: boolean;
+  wrapperRef: React.RefObject<HTMLDivElement>;
+}
+
+function DesktopSearchForm({ 
+  value, onChange, onFocus, onSubmit, 
+  suggestions, searchTerm, onSuggestionClick, loading, showSuggestions, wrapperRef 
+}: DesktopSearchFormProps) {
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative"
+      ref={wrapperRef}
+    >
+      <div className="flex items-center bg-white p-1 rounded-full shadow-sm h-9 sm:h-10">
+        <Search className="text-muted-foreground ml-3 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+        <Input
+          type="search"
+          placeholder="¿A dónde vas a viajar?"
+          className="flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-xs sm:text-sm h-full text-gray-700 placeholder-gray-400 pl-2 bg-transparent"
+          aria-label="Buscar destinos o actividades en cabecera"
+          value={value}
+          onChange={onChange}
+          onFocus={onFocus}
+          autoComplete="off"
+        />
+        <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-7 w-7 sm:h-8 sm:w-8 shrink-0 mr-0.5">
+          <Search className="h-3.5 w-3.5 sm:h-4 sm:h-4" />
+        </Button>
+      </div>
+      {showSuggestions && (
+        <SearchSuggestions
+          suggestions={suggestions}
+          searchTerm={searchTerm}
+          onSuggestionClick={onSuggestionClick}
+          loading={loading}
+        />
+      )}
+    </form>
+  );
+}
+
+
+function DesktopNav({ onLinkClick, itemCount, headerSearchProps }: { onLinkClick?: () => void; itemCount: number, headerSearchProps: DesktopSearchFormProps & { show: boolean } }) {
   return (
     <nav className="flex items-center space-x-1 md:space-x-1.5 lg:space-x-2">
+      {headerSearchProps.show && (
+        <DesktopSearchForm {...headerSearchProps} />
+      )}
       {desktopAuthButtons.map((item) => (
         <Button
           key={item.id}
@@ -82,7 +137,7 @@ function DesktopNav({ onLinkClick, itemCount }: { onLinkClick?: () => void; item
               ? 'bg-white/90 text-primary hover:bg-white' 
               : 'border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary'
           }`}
-          variant={item.styleType === 'outlined' ? 'outline' : 'default'}
+          variant={item.styleType === 'outlined' ? 'default' : 'outline'}
         >
           <Link href={item.href}>{item.label}</Link>
         </Button>
@@ -191,7 +246,7 @@ function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; 
       
       {[
         { href: '/help', label: 'Ayuda', icon: HelpCircle, ariaLabel: 'Centro de Ayuda' },
-      ].map((item) => ( // Cart icon handled separately
+      ].map((item) => ( 
         <Button
           key={item.label}
           variant="ghost"
@@ -258,8 +313,9 @@ export function AppHeader() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const { itemCount } = useCart(); // Usar itemCount del contexto del carrito
+  const { itemCount } = useCart();
 
+  // Estado y lógica para el buscador del header
   const [headerSearchInput, setHeaderSearchInput] = useState('');
   const [headerSuggestions, setHeaderSuggestions] = useState<Suggestion[]>([]);
   const [showHeaderSuggestions, setShowHeaderSuggestions] = useState(false);
@@ -297,7 +353,7 @@ export function AppHeader() {
         href: `/activities?destination=${encodeURIComponent(name)}`,
       }))
       .sort((a, b) => b.activityCount - a.activityCount)
-      .slice(0, 5);
+      .slice(0, 3); // Limitar a 3 para el header
 
     const actSuggestions: ActivitySuggestionItem[] = allActivitiesDataHeader
       .filter(activity => normalizeStringHeader(activity.title).includes(normalizedQuery))
@@ -308,7 +364,7 @@ export function AppHeader() {
         destination: activity.destination,
         href: `/activities/${activity.id}`,
       }))
-      .slice(0, 5);
+      .slice(0, 3); // Limitar a 3 para el header
 
     const combinedSuggestions = [...destSuggestions, ...actSuggestions];
     setHeaderSuggestions(combinedSuggestions);
@@ -346,7 +402,7 @@ export function AppHeader() {
       setShowHeaderSuggestions(false);
     }
   };
-
+  
   const handleHeaderInputFocus = () => {
     if (headerSearchInput.trim() !== '' && headerSuggestions.length > 0) {
       setShowHeaderSuggestions(true);
@@ -356,7 +412,7 @@ export function AppHeader() {
   const handleHeaderSuggestionClick = useCallback(() => {
     setShowHeaderSuggestions(false);
     setHeaderSearchInput('');
-    setSheetOpen(false); // Cerrar el menú móvil si está abierto
+    setSheetOpen(false); 
   }, []);
 
   const handleHeaderSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -365,7 +421,7 @@ export function AppHeader() {
       router.push(`/activities?q=${encodeURIComponent(headerSearchInput.trim())}`);
       setShowHeaderSuggestions(false);
       setHeaderSearchInput('');
-      setSheetOpen(false); // Cerrar el menú móvil si está abierto
+      setSheetOpen(false);
     }
   };
 
@@ -382,26 +438,33 @@ export function AppHeader() {
   }, [headerSearchWrapperRef]);
 
 
+  // Esqueleto para evitar parpadeo en carga inicial y SSR/hydration mismatch
   if (!mounted) {
-    // Esqueleto para evitar parpadeo en carga inicial y SSR/hydration mismatch
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-2 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center h-16">
-          <div className="text-3xl font-bold">Travely</div>
-          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div>
-          <div className="hidden md:flex items-center space-x-2">
-            <div className="h-9 w-48 md:w-64 lg:w-96 bg-primary/80 rounded-full animate-pulse"></div>
-            <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div>
-            <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div>
-            <div className="h-9 w-20 bg-primary/80 rounded-md animate-pulse"></div>
-            <div className="h-9 w-16 bg-primary/80 rounded-md animate-pulse"></div>
-            <div className="h-9 w-9 bg-primary/80 rounded-full animate-pulse"></div>
-            <div className="h-9 w-9 bg-primary/80 rounded-full animate-pulse"></div>
+          <div className="flex items-center">
+            <Logo />
+          </div>
+          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div> {/* Placeholder para icono de menú */}
+          <div className="hidden md:flex items-center space-x-1 md:space-x-1.5 lg:space-x-2">
+             {/* Placeholder para el buscador condicional */}
+            <div className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative">
+              <div className="h-9 sm:h-10 bg-primary/80 rounded-full animate-pulse"></div>
+            </div>
+            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Iniciar Sesión */}
+            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Regístrate */}
+            <div className="h-9 sm:h-10 w-20 bg-primary/80 rounded-md animate-pulse"></div> {/* Idioma */}
+            <div className="h-9 sm:h-10 w-16 bg-primary/80 rounded-md animate-pulse"></div> {/* Moneda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse"></div> {/* Ayuda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse"></div> {/* Carrito */}
           </div>
         </div>
       </header>
     );
   }
+
+  const showHeaderSearch = !isMobile && pathname !== '/';
 
   return (
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
@@ -409,41 +472,6 @@ export function AppHeader() {
         <div className="flex items-center">
           <Logo />
         </div>
-
-        {!isMobile && pathname !== '/' && (
-          <div className="flex-1 flex justify-center items-center min-w-0 px-2">
-             <form
-                onSubmit={handleHeaderSearchSubmit}
-                className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative"
-                ref={headerSearchWrapperRef}
-              >
-                <div className="flex items-center bg-white p-1 rounded-full shadow-sm h-9 sm:h-10">
-                  <SearchIconLucide className="text-muted-foreground ml-3 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  <Input
-                    type="search"
-                    placeholder="¿A dónde vas a viajar?"
-                    className="flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-xs sm:text-sm h-full text-gray-700 placeholder-gray-400 pl-2 bg-transparent"
-                    aria-label="Buscar destinos o actividades en cabecera"
-                    value={headerSearchInput}
-                    onChange={handleHeaderInputChange}
-                    onFocus={handleHeaderInputFocus}
-                    autoComplete="off"
-                  />
-                  <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-7 w-7 sm:h-8 sm:w-8 shrink-0 mr-0.5">
-                    <SearchIconLucide className="h-3.5 w-3.5 sm:h-4 sm:h-4" />
-                  </Button>
-                </div>
-                {showHeaderSuggestions && (
-                  <SearchSuggestions
-                    suggestions={headerSuggestions}
-                    searchTerm={headerSearchInput}
-                    onSuggestionClick={handleHeaderSuggestionClick}
-                    loading={headerLoadingSuggestions}
-                  />
-                )}
-              </form>
-          </div>
-        )}
         
         {isMobile ? (
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -462,9 +490,26 @@ export function AppHeader() {
             </SheetContent>
           </Sheet>
         ) : (
-          <DesktopNav onLinkClick={() => setSheetOpen(false)} itemCount={itemCount} />
+          <DesktopNav 
+            onLinkClick={() => setSheetOpen(false)} 
+            itemCount={itemCount} 
+            headerSearchProps={{
+              show: showHeaderSearch,
+              value: headerSearchInput,
+              onChange: handleHeaderInputChange,
+              onFocus: handleHeaderInputFocus,
+              onSubmit: handleHeaderSearchSubmit,
+              suggestions: headerSuggestions,
+              searchTerm: headerSearchInput,
+              onSuggestionClick: handleHeaderSuggestionClick,
+              loading: headerLoadingSuggestions,
+              showSuggestions: showHeaderSuggestions,
+              wrapperRef: headerSearchWrapperRef,
+            }}
+          />
         )}
       </div>
     </header>
   );
 }
+
