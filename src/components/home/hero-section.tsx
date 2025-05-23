@@ -4,7 +4,8 @@
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ArrowRight, CheckCircle2, SmilePlus, Users, BadgeDollarSign } from 'lucide-react';
+// Reordered imports alphabetically
+import { ArrowRight, BadgeDollarSign, CheckCircle2, Search, SmilePlus, Users } from 'lucide-react';
 
 const benefits = [
   { text: "Las mejores actividades", icon: CheckCircle2 },
