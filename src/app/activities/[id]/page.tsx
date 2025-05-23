@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -6,9 +7,8 @@ import { CalendarDays, Users, Star, MapPin, ListChecks, Info, ChevronLeft, Chevr
 import { ImageGallery } from '@/components/activity-detail/image-gallery';
 import { BookingSection } from '@/components/activity-detail/booking-section';
 import { DetailTabs } from '@/components/activity-detail/detail-tabs';
-import type { Activity } from '@/components/activities/activity-card'; // Reutilizar tipo
+import type { Activity } from '@/components/activities/activity-card'; 
 
-// Datos de ejemplo para una actividad
 const mockActivity: Activity & {
   description: string;
   images: { src: string, alt: string, dataAiHint: string }[];
@@ -21,8 +21,8 @@ const mockActivity: Activity & {
   title: 'Experiencia Cumbre Torre Eiffel con Tour Guiado',
   duration: '2 horas',
   rating: 4.5,
-  priceRange: '€65', // Precio específico para la página de detalle
-  image: 'https://placehold.co/1200x800.png', // Imagen principal para la tarjeta, si se usara
+  priceRange: '€65', 
+  image: 'https://placehold.co/1200x800.png', 
   dataAiHint: 'Torre Eiffel vista',
   destination: 'París, Francia',
   description: 'Asciende a la cumbre de la icónica Torre Eiffel para disfrutar de impresionantes vistas panorámicas de París. Esta experiencia incluye un tour guiado que ofrece fascinantes conocimientos sobre la historia y arquitectura de este monumento mundialmente famoso. El acceso sin colas te asegura aprovechar al máximo tu tiempo.',
@@ -39,11 +39,17 @@ const mockActivity: Activity & {
     { user: 'Juan D.', rating: 4, comment: 'Gran experiencia, aunque un poco concurrido en la cima.', date: '2024-07-10' },
     { user: 'Laura M.', rating: 4.5, comment: 'Vale la pena. El guía nos contó muchas anécdotas.', date: '2024-07-05' },
   ],
+  // Campos añadidos para que coincida con el tipo Activity de activity-card.tsx
+  opinions: 123, // Ejemplo
+  price: 65, // Ejemplo
+  currency: '€', // Ejemplo
+  freeCancellation: true, // Ejemplo
+  language: 'Español, Inglés', // Ejemplo
+  isFree: false, // Ejemplo
 };
 
 
 export default function ActivityDetailPage({ params }: { params: { id: string } }) {
-  // En una aplicación real, se obtendrían los datos de la actividad según params.id
   const activity = mockActivity; 
 
   if (!activity) {
@@ -51,8 +57,8 @@ export default function ActivityDetailPage({ params }: { params: { id: string } 
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="mb-6 shadow-lg overflow-hidden rounded-lg"> {/* Asegurar bordes redondeados */}
+    <div className="container mx-auto px-4"> {/* Eliminado py-8, gestionado por AppLayout */}
+      <Card className="mb-6 shadow-lg overflow-hidden rounded-lg">
         <ImageGallery images={activity.images} />
       </Card>
 

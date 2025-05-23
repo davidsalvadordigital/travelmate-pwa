@@ -4,7 +4,7 @@ import { Filters } from '@/components/activities/filters';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Frown, MapPin, CalendarDays, Star, TrendingUp, MessageSquare, Users, ListFilter, LayoutGrid, CalendarPlus, Edit } from 'lucide-react';
+import { Frown, MapPin, CalendarDays, Star, MessageSquare, Users, ListFilter, LayoutGrid, CalendarPlus } from 'lucide-react';
 import Image from 'next/image';
 
 // Datos de ejemplo para actividades (actualizados con más campos)
@@ -21,22 +21,24 @@ const activities: Activity[] = [
 const destinationDetails = {
   name: "París",
   country: "Francia",
-  region: "Región de París Isla de Francia",
+  region: "Región de París Isla de Francia", // Ejemplo
   stats: {
-    activitiesCount: 120,
-    travelersCount: "4.2M", // Simplificado como string
-    reviewsCount: 167363,
-    rating: 9.1,
+    activitiesCount: 120, // Ejemplo
+    travelersCount: "4.2M", 
+    reviewsCount: 167363, // Ejemplo
+    rating: 9.1, // Ejemplo
   },
-  heroImage: "https://placehold.co/1600x500.png", // Placeholder genérico
-  dataAiHint: "ciudad europa"
+  heroImage: "https://placehold.co/1600x500.png", 
+  dataAiHint: "ciudad paris"
 };
 
 
 export default function ActivitiesPage({ searchParams }: { searchParams?: { destination?: string; type?: string } }) {
-  // const currentDestinationName = searchParams?.destination || destinationDetails.name;
-  // Para la demo, usamos los detalles de París directamente.
-  const currentDestination = destinationDetails;
+  const currentDestinationName = searchParams?.destination || destinationDetails.name;
+  // Para la demo, usamos los detalles de París si no hay destino en searchParams.
+  // En una app real, buscaríamos los detalles del destino basado en currentDestinationName.
+  const currentDestination = { ...destinationDetails, name: currentDestinationName };
+
 
   const filteredActivities = activities.filter(activity => {
     let matches = true;
@@ -48,8 +50,8 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
   });
 
   return (
-    <div className="space-y-8">
-      {/* Cabecera del Destino Estilo Civitatis */}
+    <div className="space-y-8"> {/* Este div general puede no necesitar container si las secciones lo manejan */}
+      {/* Cabecera del Destino Estilo Civitatis - Ancho Completo */}
       <section className="relative rounded-lg overflow-hidden shadow-lg">
         <Image
           src={currentDestination.heroImage}
@@ -60,10 +62,11 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
           data-ai-hint={currentDestination.dataAiHint}
           priority
         />
-        <div className="relative z-10 p-8 text-white space-y-6">
+        <div className="relative z-10 p-8 text-white space-y-6 container mx-auto px-4"> {/* Contenedor para el texto */}
           <div className="text-sm">
             <Link href="/" className="hover:underline">Travely</Link> &gt; 
             <Link href="/destinations" className="hover:underline"> Destinos</Link> &gt; 
+            {/* Aquí podrían ir más niveles de breadcrumb si se implementa */}
             <span className="font-semibold"> {currentDestination.name}</span>
           </div>
           <h1 className="text-5xl font-bold">{currentDestination.name}</h1>
@@ -93,66 +96,61 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
         </div>
       </section>
 
-      {/* Barra de Disponibilidad, Duración, Controles */}
-      <Card className="shadow-md">
-        <CardContent className="p-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold">Disponibilidad:</span>
-            <Button variant="outline" size="sm">Hoy</Button>
-            <Button variant="outline" size="sm">Mañana</Button>
-            <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5">
-              <CalendarDays className="mr-2 h-4 w-4"/>Fechas
-            </Button>
-          </div>
-          <div className="text-muted-foreground">
-            {/* Ejemplo de texto, en una app real sería dinámico */}
-            {filteredActivities.length} excursiones y actividades en {currentDestination.name}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-              <LayoutGrid className="mr-2 h-4 w-4"/>Listado
-            </Button>
-            {/* <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-              <MapPin className="mr-2 h-4 w-4"/>Mapa
-            </Button> */}
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-              <ListFilter className="mr-2 h-4 w-4"/>Ordenar
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-
-      <div className="flex flex-col md:flex-row gap-8">
-        <aside className="w-full md:w-1/3 lg:w-1/4"> {/* Ajustar ancho del sidebar */}
-          <Filters />
-        </aside>
-        <main className="w-full md:w-2/3 lg:w-3/4">
-          {filteredActivities.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"> {/* Ajustar columnas para tarjetas más grandes */}
-              {filteredActivities.map((activity) => (
-                <ActivityCard key={activity.id} activity={activity} />
-              ))}
+      {/* Contenido Principal con Filtros y Tarjetas - Contenido */}
+      <div className="container mx-auto px-4 space-y-8">
+        {/* Barra de Disponibilidad, Duración, Controles */}
+        <Card className="shadow-md">
+          <CardContent className="p-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold">Disponibilidad:</span>
+              <Button variant="outline" size="sm">Hoy</Button>
+              <Button variant="outline" size="sm">Mañana</Button>
+              <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5">
+                <CalendarDays className="mr-2 h-4 w-4"/>Fechas
+              </Button>
             </div>
-          ) : (
-            <Card>
-              <CardContent className="p-10 text-center">
-                <Frown className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-xl font-semibold mb-2">No se encontraron actividades</p>
-                <p className="text-muted-foreground mb-4">
-                  Intenta ajustar tus filtros o explora otros destinos.
-                </p>
-                <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Link href="/destinations">Explorar Destinos</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-          {/* Aquí se podría añadir paginación */}
-        </main>
+            <div className="text-muted-foreground">
+              {filteredActivities.length} excursiones y actividades en {currentDestination.name}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <LayoutGrid className="mr-2 h-4 w-4"/>Listado
+              </Button>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <ListFilter className="mr-2 h-4 w-4"/>Ordenar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex flex-col md:flex-row gap-8">
+          <aside className="w-full md:w-1/3 lg:w-1/4">
+            <Filters />
+          </aside>
+          <main className="w-full md:w-2/3 lg:w-3/4">
+            {filteredActivities.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredActivities.map((activity) => (
+                  <ActivityCard key={activity.id} activity={activity} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-10 text-center">
+                  <Frown className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-xl font-semibold mb-2">No se encontraron actividades</p>
+                  <p className="text-muted-foreground mb-4">
+                    Intenta ajustar tus filtros o explora otros destinos.
+                  </p>
+                  <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Link href="/destinations">Explorar Destinos</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );
 }
-
-    

@@ -1,28 +1,28 @@
 
 import { HeroSection } from '@/components/home/hero-section';
 import { PopularDestinations } from '@/components/home/popular-destinations';
-import { ActivityTypes } from '@/components/home/activity-types'; // Este se convertirá en "Actividades Destacadas"
+import { ActivityTypes } from '@/components/home/activity-types';
 import { UspSection } from '@/components/home/usp-section';
 
 export default function HomePage() {
   return (
-    <div className="space-y-12 md:space-y-16">
-      <HeroSection />
+    <>
+      <HeroSection /> {/* HeroSection ahora es de ancho completo */}
       
-      <section className="py-10 bg-muted rounded-xl">
-        <div className="container mx-auto px-4">
+      {/* Contenedor para el resto del contenido de la página de inicio */}
+      <div className="container mx-auto px-4">
+        <section className="py-10 bg-muted rounded-xl mt-12 md:mt-16"> {/* Añadido margen superior para separar del Hero */}
           <PopularDestinations />
-        </div>
-      </section>
-      
-      {/* TODO: La sección "Actividades destacadas" reemplazará o modificará ActivityTypes */}
-      <section className="py-10">
-         <div className="container mx-auto px-4">
-            <ActivityTypes /> {/* Temporalmente, se cambiará por Actividades Destacadas */}
-         </div>
-      </section>
+        </section>
+        
+        <section className="py-10 mt-12 md:mt-16">
+          <ActivityTypes />
+        </section>
 
-      <UspSection />
-    </div>
+        <div className="mt-12 md:mt-16"> {/* UspSection ya tiene su propio padding y bg, solo necesita margen */}
+          <UspSection />
+        </div>
+      </div>
+    </>
   );
 }

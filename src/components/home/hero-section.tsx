@@ -4,7 +4,6 @@
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-// Reordered imports alphabetically
 import { ArrowRight, BadgeDollarSign, CheckCircle2, Search, SmilePlus, Users } from 'lucide-react';
 
 const benefits = [
@@ -16,7 +15,7 @@ const benefits = [
 
 export function HeroSection() {
   return (
-    <section className="relative h-[550px] md:h-[650px] rounded-xl overflow-hidden shadow-lg">
+    <section className="relative h-[550px] md:h-[650px] overflow-hidden shadow-lg"> {/* Eliminado rounded-xl */}
       <Image
         src="https://placehold.co/1600x900.png"
         alt="Impresionante destino de viaje con globos aerostáticos sobre templos antiguos al amanecer"
