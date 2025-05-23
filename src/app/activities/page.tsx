@@ -1,4 +1,6 @@
 
+'use client';
+
 import { ActivityCard, type Activity } from '@/components/activities/activity-card';
 import { Filters } from '@/components/activities/filters';
 import { Card, CardContent } from '@/components/ui/card';
