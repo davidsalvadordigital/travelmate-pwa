@@ -15,15 +15,23 @@ import { useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(today.getDate() + 1);
+const dayAfterTomorrow = new Date(today);
+dayAfterTomorrow.setDate(today.getDate() + 2);
+
+const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
+
 const allActivities: Activity[] = [
-  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas' },
-  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas' },
-  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas' },
-  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas' },
-  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones' },
-  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados' },
-  { id: '7', title: 'Cata de Vinos Franceses en Le Marais', duration: '2 horas', rating: 9.2, opinions: 320, price: 75.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vino copas', destination: 'París', freeCancellation: true, language: 'Español, Inglés', isFree: false, category: 'Gastronomía' },
-  { id: '8', title: 'Espectáculo Moulin Rouge con Cena', duration: '4 horas', rating: 8.9, opinions: 1250, price: 180.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Moulin Rouge', destination: 'París', freeCancellation: false, language: 'Internacional', isFree: false, category: 'Espectáculos' },
+  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-15', '2024-09-16'] },
+  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-17'] },
+  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDate(today), '2024-09-15', '2024-09-18'] },
+  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow)] },
+  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDate(dayAfterTomorrow), '2024-09-20'] },
+  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow)] }, // Traslados suelen ser más flexibles
+  { id: '7', title: 'Cata de Vinos Franceses en Le Marais', duration: '2 horas', rating: 9.2, opinions: 320, price: 75.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vino copas', destination: 'París', freeCancellation: true, language: 'Español, Inglés', isFree: false, category: 'Gastronomía', availableDates: ['2024-09-10', '2024-09-17', '2024-09-24'] },
+  { id: '8', title: 'Espectáculo Moulin Rouge con Cena', duration: '4 horas', rating: 8.9, opinions: 1250, price: 180.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Moulin Rouge', destination: 'París', freeCancellation: false, language: 'Internacional', isFree: false, category: 'Espectáculos', availableDates: [formatDate(tomorrow), '2024-09-12', '2024-09-19'] },
 ];
 
 const destinationDetails = {
@@ -108,9 +116,20 @@ export default function ActivitiesPage() {
         matches = false;
       }
 
+      if (selectedDate) {
+        const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
+        if (!activity.availableDates || !activity.availableDates.includes(formattedSelectedDate)) {
+          matches = false;
+        }
+      }
+
       return matches;
     });
-  }, [destinationParam, appliedFilters]);
+  }, [destinationParam, appliedFilters, selectedDate]);
+
+  const handleSelectDate = (date: Date | undefined) => {
+    setSelectedDate(date);
+  };
 
   return (
     <div className="space-y-8">
@@ -143,7 +162,7 @@ export default function ActivitiesPage() {
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={setSelectedDate}
+                onSelect={handleSelectDate}
                 initialFocus
                 locale={es}
                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
@@ -178,8 +197,8 @@ export default function ActivitiesPage() {
           <CardContent className="p-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold">Disponibilidad:</span>
-              <Button variant="outline" size="sm">Hoy</Button>
-              <Button variant="outline" size="sm">Mañana</Button>
+              <Button variant="outline" size="sm" onClick={() => handleSelectDate(today)}>Hoy</Button>
+              <Button variant="outline" size="sm" onClick={() => handleSelectDate(tomorrow)}>Mañana</Button>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5">
@@ -191,7 +210,7 @@ export default function ActivitiesPage() {
                   <Calendar
                     mode="single"
                     selected={selectedDate}
-                    onSelect={setSelectedDate}
+                    onSelect={handleSelectDate}
                     initialFocus
                     locale={es}
                     disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
@@ -230,7 +249,7 @@ export default function ActivitiesPage() {
                   <Frown className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <p className="text-xl font-semibold mb-2">No se encontraron actividades</p>
                   <p className="text-muted-foreground mb-4">
-                    Intenta ajustar tus filtros o explora otros destinos.
+                    Intenta ajustar tus filtros o selecciona otra fecha.
                   </p>
                   <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Link href="/destinations">Explorar Destinos</Link>

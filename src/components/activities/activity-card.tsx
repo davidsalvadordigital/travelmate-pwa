@@ -25,7 +25,8 @@ export interface Activity {
   language: string;
   isFree: boolean;
   originalPrice?: number;
-  category: string; // Nuevo campo para la categoría de la actividad
+  category: string; 
+  availableDates?: string[]; // Formato YYYY-MM-DD
 }
 
 interface ActivityCardProps {
