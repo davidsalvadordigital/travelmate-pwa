@@ -3,11 +3,12 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Menu, MapPin, Search as SearchIcon, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 // Main navigation items - KEPT FOR MOBILE MENU
 const mainNavItemsForMobile = [
@@ -49,7 +50,7 @@ function DesktopSearchForm() {
         aria-label="Buscar destinos o actividades"
       />
       <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-7 w-7 sm:h-8 sm:w-8 shrink-0">
-        <SearchIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <SearchIcon className="h-3.5 w-3.5 sm:h-4 sm:h-4" />
       </Button>
     </form>
   );
@@ -65,7 +66,7 @@ function DesktopNav({ onLinkClick }: { onLinkClick?: () => void }) {
           onClick={onLinkClick}
           className={`rounded-full px-3 py-1.5 h-9 sm:h-10 text-xs sm:text-sm ${
             item.styleType === 'filled'
-              ? 'bg-white/90 text-primary hover:bg-white' // Pink filled style (using white on pink bg)
+              ? 'bg-white/90 text-primary hover:bg-white' 
               : 'border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary'
           }`}
           variant={item.styleType === 'outlined' ? 'outline' : 'default'}
@@ -209,6 +210,7 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
 
 export function AppHeader() {
   const isMobile = useIsMobile();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -216,13 +218,17 @@ export function AppHeader() {
     setMounted(true);
   }, []);
 
+  // Esqueleto para evitar parpadeo en carga inicial y SSR/hydration mismatch
   if (!mounted) {
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center h-16">
-          <div className="text-3xl font-bold">Travely</div>
-          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div>
+        <div className="container mx-auto px-2 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center h-16">
+          <div className="text-3xl font-bold">Travely</div> {/* Placeholder Logo */}
+          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div> {/* Placeholder para icono de menú */}
           <div className="hidden md:flex items-center space-x-2">
+            {/* Simplified skeleton: Always include a placeholder for the search bar area.
+                The actual search bar is conditionally rendered based on pathname when mounted.
+            */}
             <div className="h-9 w-48 md:w-64 lg:w-96 bg-primary/80 rounded-full animate-pulse"></div> {/* Search bar skeleton */}
             <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Login skeleton */}
             <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Signup skeleton */}
@@ -243,7 +249,7 @@ export function AppHeader() {
           <Logo />
         </div>
 
-        {!isMobile && (
+        {!isMobile && pathname !== '/' && ( // Solo mostrar si no es mobile Y no es la homepage
           <div className="flex-1 flex justify-center items-center min-w-0 px-2">
             <DesktopSearchForm />
           </div>
@@ -258,9 +264,8 @@ export function AppHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[360px] bg-primary text-primary-foreground p-0 flex flex-col">
               <SheetHeader className="p-4 border-b border-primary-foreground/20">
-                <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">Menú</SheetTitle>
-                {/* sr-only title for accessibility as required by Radix Dialog (Sheet is based on Dialog) */}
-                <div className="sr-only"><SheetTitle>Menú Principal</SheetTitle></div>
+                <SheetTitle className="sr-only">Menú Principal</SheetTitle> {/* Visually hidden title for accessibility */}
+                <div className="text-2xl font-bold text-primary-foreground text-left">Menú</div>
               </SheetHeader>
               <div className="flex-grow overflow-y-auto">
                 <MobileNavLinks onLinkClick={() => setSheetOpen(false)} />
