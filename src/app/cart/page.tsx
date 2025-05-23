@@ -1,77 +1,23 @@
 
 "use client"; 
 
-import { useState, useEffect } from 'react';
+import { useCart, type CartItem } from '@/context/cart-context'; // Importar useCart y CartItem
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, XCircle, ArrowRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useToast } from "@/hooks/use-toast"; 
+import { useToast } from "@/hooks/use-toast";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
-interface CartItem {
-  id: string;
-  title: string;
-  image: string;
-  dataAiHint: string;
-  date: string; // Podría ser tipo Date para más flexibilidad, pero string es simple para mock
-  time: string;
-  participants: number;
-  pricePerParticipant: number;
-  currency: string;
-}
-
-const initialMockCartItems: CartItem[] = [
-  {
-    id: '1',
-    title: 'Paseo en barco por el Sena',
-    image: 'https://placehold.co/600x400.png',
-    dataAiHint: 'paseo barco sena',
-    date: '2024-09-15',
-    time: '14:00',
-    participants: 2,
-    pricePerParticipant: 19.25,
-    currency: 'US$',
-  },
-  {
-    id: '3',
-    title: 'Visita guiada por el Museo del Louvre',
-    image: 'https://placehold.co/600x400.png',
-    dataAiHint: 'Louvre Mona Lisa',
-    date: '2024-09-18',
-    time: '10:00',
-    participants: 1,
-    pricePerParticipant: 90.61,
-    currency: 'US$',
-  }
-];
-
-// Control para decidir si mostrar datos de ejemplo o empezar con carrito vacío
-const showMockDataOnLoad = true; 
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const { toast } = useToast();
+  const { cartItems, removeFromCart, clearCart } = useCart(); // Usar el contexto del carrito
+  const { toast } = useToast(); // Toast para acciones no implementadas
 
-  // Cargar datos de ejemplo solo una vez al montar el componente si showMockDataOnLoad es true
-  useEffect(() => {
-    if (showMockDataOnLoad) {
-      setCartItems(initialMockCartItems);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // El array de dependencias vacío asegura que esto solo se ejecute al montar
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.pricePerParticipant * item.participants, 0);
-  const currency = cartItems.length > 0 ? cartItems[0].currency : 'US$';
-
-  const handleRemoveItem = (itemId: string, itemTitle: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
-    toast({
-      title: "Artículo Eliminado",
-      description: `"${itemTitle}" se ha eliminado de tu carrito.`,
-      variant: "default", 
-    });
-  };
+  const subtotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+  const currency = cartItems.length > 0 ? cartItems[0].currency : 'US$'; // Asumir misma moneda
 
   const handleProceedToPayment = () => {
     if (cartItems.length === 0) {
@@ -89,6 +35,8 @@ export default function CartPage() {
       variant: "default"
     });
     console.log("Simulación: Procediendo al pago con los siguientes artículos:", cartItems);
+    // Opcionalmente, vaciar el carrito después de un "pago" simulado exitoso
+    // clearCart(); 
   };
 
   return (
@@ -106,7 +54,7 @@ export default function CartPage() {
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
-                <Card key={item.id} className="shadow-md rounded-lg overflow-hidden">
+                <Card key={item.id + (item.selectedDate ? item.selectedDate.toISOString() : '')} className="shadow-md rounded-lg overflow-hidden">
                   <CardContent className="p-4 flex flex-col sm:flex-row gap-4">
                     <div className="relative w-full sm:w-40 h-32 sm:h-auto rounded-md overflow-hidden shrink-0">
                       <Image
@@ -119,17 +67,19 @@ export default function CartPage() {
                     </div>
                     <div className="flex-grow">
                       <CardTitle className="text-lg text-primary mb-1">{item.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground">Fecha: {item.date} a las {item.time}</p>
+                      {item.selectedDate && (
+                        <p className="text-sm text-muted-foreground">Fecha: {format(item.selectedDate, "PPP", { locale: es })}</p>
+                      )}
                       <p className="text-sm text-muted-foreground">Participantes: {item.participants}</p>
                       <p className="text-md font-semibold mt-2">
-                        Precio: {(item.pricePerParticipant * item.participants).toFixed(2)} {item.currency}
+                        Precio: {item.currency}{item.totalPrice.toFixed(2)}
                       </p>
                     </div>
                     <Button 
                       variant="ghost" 
                       size="icon" 
                       className="text-destructive hover:bg-destructive/10 self-start sm:self-center shrink-0"
-                      onClick={() => handleRemoveItem(item.id, item.title)} 
+                      onClick={() => removeFromCart(item.id, item.title)} // Usar removeFromCart del contexto
                       aria-label="Eliminar del carrito"
                     >
                       <Trash2 className="h-5 w-5" />
@@ -147,13 +97,13 @@ export default function CartPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Subtotal ({cartItems.length} artículo{cartItems.length !== 1 ? 's':''}):</span>
-                    <span>{subtotal.toFixed(2)} {currency}</span>
+                    <span>Subtotal ({cartItems.length} tipo{cartItems.length !== 1 ? 's':''} de actividad):</span>
+                    <span>{currency}{subtotal.toFixed(2)}</span>
                   </div>
                   {/* Aquí podrían ir descuentos, impuestos, etc. */}
                   <div className="flex justify-between font-semibold text-lg text-foreground border-t pt-3 mt-3">
                     <span>Total Estimado:</span>
-                    <span className="text-primary">{subtotal.toFixed(2)} {currency}</span>
+                    <span className="text-primary">{currency}{subtotal.toFixed(2)}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-3">

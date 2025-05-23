@@ -3,33 +3,34 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'; // SheetTitle importada
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Menu, MapPin, Search as SearchIconLucide, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign, ArrowRight } from 'lucide-react';
+import { Menu, MapPin, Search as SearchIconLucide, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState, useRef, useCallback, type FormEvent } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import type { Activity } from '@/components/activities/activity-card'; // Importar Activity
-import { SearchSuggestions, type Suggestion, type DestinationSuggestion, type ActivitySuggestionItem } from '@/components/home/search-suggestions'; // Importar SearchSuggestions
-import { format } from 'date-fns'; // Importar format
+import type { Activity } from '@/components/activities/activity-card';
+import { SearchSuggestions, type Suggestion, type DestinationSuggestion, type ActivitySuggestionItem } from '@/components/home/search-suggestions';
+import { format } from 'date-fns';
+import { useCart } from '@/context/cart-context'; // Importar useCart
 
 // TEMPORAL: Copia de datos y función de normalización para prototipado en AppHeader
-const today = new Date();
-const tomorrow = new Date(today);
-tomorrow.setDate(today.getDate() + 1);
-const dayAfterTomorrow = new Date(today);
-dayAfterTomorrow.setDate(today.getDate() + 2);
+const todayHeader = new Date();
+const tomorrowHeader = new Date(todayHeader);
+tomorrowHeader.setDate(todayHeader.getDate() + 1);
+const dayAfterTomorrowHeader = new Date(todayHeader);
+dayAfterTomorrowHeader.setDate(todayHeader.getDate() + 2);
 
-const formatDateHeader = (date: Date): string => format(date, 'yyyy-MM-dd');
+const formatDateHeaderData = (date: Date): string => format(date, 'yyyy-MM-dd');
 
 const allActivitiesDataHeader: Activity[] = [
-  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), formatDateHeader(tomorrow), formatDateHeader(dayAfterTomorrow), '2024-09-15', '2024-09-16'], startTimeNumeric: 14, durationHoursNumeric: 1 },
-  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeader(tomorrow), formatDateHeader(dayAfterTomorrow), '2024-09-17'], startTimeNumeric: 10, durationHoursNumeric: 3 },
-  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), '2024-09-15', '2024-09-18'], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
-  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), formatDateHeader(tomorrow)], startTimeNumeric: 9, durationHoursNumeric: 2.5 },
-  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDateHeader(dayAfterTomorrow), '2024-09-20'], startTimeNumeric: 8, durationHoursNumeric: 4 },
-  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeader(today), formatDateHeader(tomorrow)], startTimeNumeric: 9, durationHoursNumeric: 3 },
-  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), formatDateHeader(dayAfterTomorrow)], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader), formatDateHeaderData(dayAfterTomorrowHeader), '2024-09-15', '2024-09-16'], startTimeNumeric: 14, durationHoursNumeric: 1 },
+  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(tomorrowHeader), formatDateHeaderData(dayAfterTomorrowHeader), '2024-09-17'], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), '2024-09-15', '2024-09-18'], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
+  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 9, durationHoursNumeric: 2.5 },
+  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDateHeaderData(dayAfterTomorrowHeader), '2024-09-20'], startTimeNumeric: 8, durationHoursNumeric: 4 },
+  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 9, durationHoursNumeric: 3 },
+  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(dayAfterTomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
 ];
 
 const normalizeStringHeader = (str: string) => {
@@ -51,7 +52,7 @@ const desktopUtilityItems = [
   { id: 'lang-selector', label: 'Español', icon: Globe, dropdownIcon: ChevronDown, href: '#', ariaLabel: 'Seleccionar Idioma' },
   { id: 'currency-selector', label: 'US$', icon: DollarSign, dropdownIcon: ChevronDown, href: '#', ariaLabel: 'Seleccionar Moneda' },
   { id: 'help', href: '/help', label: 'Ayuda', icon: HelpCircle, isIconOnly: true, ariaLabel: 'Centro de Ayuda' },
-  { id: 'cart', href: '/cart', label: 'Carrito', icon: ShoppingCart, isIconOnly: true, ariaLabel: 'Carrito de Compras' },
+  // Cart icon will be handled separately to include itemCount
 ];
 
 const desktopAuthButtons = [
@@ -68,7 +69,7 @@ function Logo() {
   );
 }
 
-function DesktopNav({ onLinkClick }: { onLinkClick?: () => void }) {
+function DesktopNav({ onLinkClick, itemCount }: { onLinkClick?: () => void; itemCount: number }) {
   return (
     <nav className="flex items-center space-x-1 md:space-x-1.5 lg:space-x-2">
       {desktopAuthButtons.map((item) => (
@@ -121,12 +122,31 @@ function DesktopNav({ onLinkClick }: { onLinkClick?: () => void }) {
           </Button>
         );
       })}
+      {/* Cart Icon with Item Count */}
+      <Button
+          variant="ghost"
+          size="icon"
+          asChild
+          className="text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground rounded-md w-9 h-9 sm:w-10 sm:h-10 relative"
+          title="Carrito de Compras"
+          aria-label="Carrito de Compras"
+          onClick={onLinkClick}
+        >
+          <Link href="/cart">
+            <ShoppingCart className="h-5 w-5" />
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+          </Link>
+        </Button>
     </nav>
   );
 }
 
 
-function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
+function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; itemCount: number }) {
   const linkClassBase = 'w-full justify-start text-lg text-primary-foreground hover:bg-primary/80 py-3 px-4 rounded-md';
   const iconClassBase = `mr-2 h-5 w-5 text-primary-foreground`;
 
@@ -171,8 +191,7 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
       
       {[
         { href: '/help', label: 'Ayuda', icon: HelpCircle, ariaLabel: 'Centro de Ayuda' },
-        { href: '/cart', label: 'Carrito', icon: ShoppingCart, ariaLabel: 'Carrito de Compras' },
-      ].map((item) => (
+      ].map((item) => ( // Cart icon handled separately
         <Button
           key={item.label}
           variant="ghost"
@@ -188,6 +207,25 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
           </Link>
         </Button>
       ))}
+      <Button
+        variant="ghost"
+        asChild
+        className={`${linkClassBase} relative`}
+        title="Carrito de Compras"
+        aria-label="Carrito de Compras"
+        onClick={onLinkClick}
+      >
+        <Link href="/cart">
+          <ShoppingCart className={iconClassBase} />
+          Carrito
+          {itemCount > 0 && (
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-primary text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+        </Link>
+      </Button>
+
 
       <div className="pt-3 border-t border-primary-foreground/20 mt-3 space-y-2">
         {desktopAuthButtons.map((item) => (
@@ -220,8 +258,8 @@ export function AppHeader() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { itemCount } = useCart(); // Usar itemCount del contexto del carrito
 
-  // State for header search
   const [headerSearchInput, setHeaderSearchInput] = useState('');
   const [headerSuggestions, setHeaderSuggestions] = useState<Suggestion[]>([]);
   const [showHeaderSuggestions, setShowHeaderSuggestions] = useState(false);
@@ -318,6 +356,7 @@ export function AppHeader() {
   const handleHeaderSuggestionClick = useCallback(() => {
     setShowHeaderSuggestions(false);
     setHeaderSearchInput('');
+    setSheetOpen(false); // Cerrar el menú móvil si está abierto
   }, []);
 
   const handleHeaderSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -326,6 +365,7 @@ export function AppHeader() {
       router.push(`/activities?q=${encodeURIComponent(headerSearchInput.trim())}`);
       setShowHeaderSuggestions(false);
       setHeaderSearchInput('');
+      setSheetOpen(false); // Cerrar el menú móvil si está abierto
     }
   };
 
@@ -343,20 +383,20 @@ export function AppHeader() {
 
 
   if (!mounted) {
+    // Esqueleto para evitar parpadeo en carga inicial y SSR/hydration mismatch
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-2 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center h-16">
-          <div className="text-3xl font-bold">Travely</div> {/* Placeholder Logo */}
-          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div> {/* Placeholder para icono de menú */}
+          <div className="text-3xl font-bold">Travely</div>
+          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div>
           <div className="hidden md:flex items-center space-x-2">
-            {/* Simplified skeleton: Always include a placeholder for the search bar area. */}
-            <div className="h-9 w-48 md:w-64 lg:w-96 bg-primary/80 rounded-full animate-pulse"></div> {/* Search bar skeleton */}
-            <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Login skeleton */}
-            <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Signup skeleton */}
-            <div className="h-9 w-20 bg-primary/80 rounded-md animate-pulse"></div> {/* Lang skeleton */}
-            <div className="h-9 w-16 bg-primary/80 rounded-md animate-pulse"></div> {/* Currency skeleton */}
-            <div className="h-9 w-9 bg-primary/80 rounded-full animate-pulse"></div> {/* Help skeleton */}
-            <div className="h-9 w-9 bg-primary/80 rounded-full animate-pulse"></div> {/* Cart skeleton */}
+            <div className="h-9 w-48 md:w-64 lg:w-96 bg-primary/80 rounded-full animate-pulse"></div>
+            <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div>
+            <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div>
+            <div className="h-9 w-20 bg-primary/80 rounded-md animate-pulse"></div>
+            <div className="h-9 w-16 bg-primary/80 rounded-md animate-pulse"></div>
+            <div className="h-9 w-9 bg-primary/80 rounded-full animate-pulse"></div>
+            <div className="h-9 w-9 bg-primary/80 rounded-full animate-pulse"></div>
           </div>
         </div>
       </header>
@@ -417,16 +457,14 @@ export function AppHeader() {
                 <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">Menú</SheetTitle>
               </SheetHeader>
               <div className="flex-grow overflow-y-auto">
-                <MobileNavLinks onLinkClick={() => setSheetOpen(false)} />
+                <MobileNavLinks onLinkClick={() => setSheetOpen(false)} itemCount={itemCount} />
               </div>
             </SheetContent>
           </Sheet>
         ) : (
-          <DesktopNav />
+          <DesktopNav onLinkClick={() => setSheetOpen(false)} itemCount={itemCount} />
         )}
       </div>
     </header>
   );
 }
-
-    

@@ -8,11 +8,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Users, Minus, Plus, ShoppingCart } from 'lucide-react';
+import { CalendarIcon, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { Activity } from '@/components/activities/activity-card';
-import { useToast } from "@/hooks/use-toast";
+import { useCart } from '@/context/cart-context'; // Importar useCart
 
 interface BookingSectionProps {
   activity: Activity; 
@@ -21,41 +21,31 @@ interface BookingSectionProps {
 export function BookingSection({ activity }: BookingSectionProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [numberOfPeople, setNumberOfPeople] = useState(1);
-  const [totalPrice, setTotalPrice] = useState<number | null>(null);
-  const { toast } = useToast();
+  const [currentTotalPrice, setCurrentTotalPrice] = useState<number>(activity.price * numberOfPeople); // Usar el precio de la actividad
+  const { addToCart } = useCart(); // Usar el hook del carrito
 
   useEffect(() => {
-    if (selectedDate && numberOfPeople > 0 && activity.price !== undefined) {
-      setTotalPrice(activity.price * numberOfPeople);
+    if (numberOfPeople > 0 && activity.price !== undefined) {
+      setCurrentTotalPrice(activity.price * numberOfPeople);
     } else {
-      setTotalPrice(null);
+      setCurrentTotalPrice(0);
     }
-  }, [selectedDate, numberOfPeople, activity.price]);
+  }, [numberOfPeople, activity.price]);
 
-  const handleBooking = () => {
+  const handleAddToCart = () => {
     if (!selectedDate) {
-      toast({
-        title: "Error en la Reserva",
-        description: "Por favor, selecciona una fecha para tu actividad.",
-        variant: "destructive",
-      });
+      // Ya usamos useToast en el contexto, no es necesario aquí si el contexto lo maneja
+      // (Asumiendo que el contexto mostrará errores o confirmaciones)
+      alert("Por favor, selecciona una fecha para tu actividad."); // Placeholder, useToast es mejor
       return;
     }
     if (numberOfPeople <= 0) {
-      toast({
-        title: "Error en la Reserva",
-        description: "Por favor, especifica al menos una persona.",
-        variant: "destructive",
-      });
+      alert("Por favor, especifica al menos una persona."); // Placeholder
       return;
     }
-    // Proceder con la lógica de reserva (simulación)
-    console.log('Detalles de la reserva:', { activityId: activity.id, date: selectedDate, people: numberOfPeople, totalPrice });
-    toast({
-      title: "¡Reserva Iniciada!",
-      description: `Reserva para ${activity.title} el ${selectedDate ? format(selectedDate, 'PPP', { locale: es }) : ''} para ${numberOfPeople} persona(s). Total: ${activity.currency}${totalPrice?.toFixed(2)}`,
-      variant: "default"
-    });
+    
+    addToCart(activity, selectedDate, numberOfPeople);
+    // El toast de confirmación ahora se maneja dentro de addToCart en el contexto
   };
 
   return (
@@ -119,12 +109,12 @@ export function BookingSection({ activity }: BookingSectionProps) {
           </div>
         </div>
         
-        {totalPrice !== null && activity.price !== undefined && (
+        {currentTotalPrice > 0 && activity.price !== undefined && (
           <div className="pt-4 border-t">
             <p className="text-xl font-semibold text-foreground flex items-center justify-between">
               <span>Precio Total:</span>
               <span className="flex items-center text-primary">
-                {activity.currency}{totalPrice.toFixed(2)}
+                {activity.currency}{currentTotalPrice.toFixed(2)}
               </span>
             </p>
           </div>
@@ -135,10 +125,10 @@ export function BookingSection({ activity }: BookingSectionProps) {
         <Button 
           size="lg" 
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg"
-          onClick={handleBooking}
+          onClick={handleAddToCart} // Cambiado a handleAddToCart
           disabled={!selectedDate || numberOfPeople <= 0 || activity.price === undefined}
         >
-          <ShoppingCart className="mr-2 h-5 w-5" /> Reservar Ahora
+          <ShoppingCart className="mr-2 h-5 w-5" /> Añadir al Carrito
         </Button>
       </CardFooter>
     </Card>
