@@ -1,65 +1,135 @@
-import { ActivityCard } from '@/components/activities/activity-card';
+
+import { ActivityCard, type Activity } from '@/components/activities/activity-card';
 import { Filters } from '@/components/activities/filters';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Frown } from 'lucide-react';
+import { Frown, MapPin, CalendarDays, Star, TrendingUp, MessageSquare, Users, ListFilter, LayoutGrid, CalendarPlus, Edit } from 'lucide-react';
+import Image from 'next/image';
 
-
-// Datos de ejemplo para actividades
-const activities = [
-  { id: '1', title: 'Experiencia Cumbre Torre Eiffel con Tour Guiado', duration: '2 horas', rating: 4.5, priceRange: '€50 - €70', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel', destination: 'París' },
-  { id: '2', title: 'Tour Coliseo y Foro Romano', duration: '3 horas', rating: 4.8, priceRange: '€60 - €90', image: 'https://placehold.co/600x400.png', dataAiHint: 'Coliseo Roma', destination: 'Roma' },
-  { id: '3', title: 'Templos de Kioto y Jardines Zen', duration: 'Día completo', rating: 4.7, priceRange: '€100 - €150', image: 'https://placehold.co/600x400.png', dataAiHint: 'Templo Kioto', destination: 'Kioto' },
-  { id: '4', title: 'Estatua de la Libertad e Isla Ellis', duration: '4 horas', rating: 4.6, priceRange: '€40 - €60', image: 'https://placehold.co/600x400.png', dataAiHint: 'Estatua Libertad', destination: 'Nueva York' },
-  { id: '5', title: 'Crucero por el Río Sena', duration: '1 hora', rating: 4.3, priceRange: '€20 - €30', image: 'https://placehold.co/600x400.png', dataAiHint: 'Río Sena', destination: 'París' },
-  { id: '6', title: 'Museos Vaticanos y Capilla Sixtina', duration: '3.5 horas', rating: 4.9, priceRange: '€70 - €100', image: 'https://placehold.co/600x400.png', dataAiHint: 'Museo Vaticano', destination: 'Roma' },
+// Datos de ejemplo para actividades (actualizados con más campos)
+const activities: Activity[] = [
+  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00 },
+  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false },
+  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false },
+  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true },
+  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false },
+  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false },
 ];
 
+// Simulación de datos para la cabecera del destino
+const destinationDetails = {
+  name: "París",
+  country: "Francia",
+  region: "Región de París Isla de Francia",
+  stats: {
+    activitiesCount: 120,
+    travelersCount: "4.2M", // Simplificado como string
+    reviewsCount: 167363,
+    rating: 9.1,
+  },
+  heroImage: "https://placehold.co/1600x500.png", // Placeholder genérico
+  dataAiHint: "ciudad europa"
+};
+
+
 export default function ActivitiesPage({ searchParams }: { searchParams?: { destination?: string; type?: string } }) {
-  const destination = searchParams?.destination || 'Todos los Destinos';
-  const activityType = searchParams?.type;
+  // const currentDestinationName = searchParams?.destination || destinationDetails.name;
+  // Para la demo, usamos los detalles de París directamente.
+  const currentDestination = destinationDetails;
 
   const filteredActivities = activities.filter(activity => {
     let matches = true;
     if (searchParams?.destination && activity.destination.toLowerCase() !== searchParams.destination.toLowerCase()) {
       matches = false;
     }
-    // Ejemplo básico de filtrado por tipo (puede expandirse)
-    if (activityType && !activity.title.toLowerCase().includes(activityType.replace(/s$/, ''))) { // Eliminación simple de plural
-      // matches = false; // Esta lógica necesita ser más robusta basada en tipos de actividad reales
-    }
+    // La lógica de filtrado por tipo se moverá o se basará en los nuevos filtros
     return matches;
   });
 
-  // Capitalizar el nombre del destino y tipo de actividad para el título
-  const displayDestination = destination.split(' ')
-                               .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                               .join(' ');
-  const displayActivityType = activityType ? activityType.charAt(0).toUpperCase() + activityType.slice(1) : '';
-
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="mb-8 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-primary">
-            Actividades en {displayDestination}
-            {displayActivityType && ` - ${displayActivityType}`}
-          </CardTitle>
-          <CardDescription>
-            Explora y reserva experiencias increíbles para tu viaje.
-          </CardDescription>
-        </CardHeader>
+    <div className="space-y-8">
+      {/* Cabecera del Destino Estilo Civitatis */}
+      <section className="relative rounded-lg overflow-hidden shadow-lg">
+        <Image
+          src={currentDestination.heroImage}
+          alt={`Fondo de ${currentDestination.name}`}
+          layout="fill"
+          objectFit="cover"
+          className="brightness-50"
+          data-ai-hint={currentDestination.dataAiHint}
+          priority
+        />
+        <div className="relative z-10 p-8 text-white space-y-6">
+          <div className="text-sm">
+            <Link href="/" className="hover:underline">Travely</Link> &gt; 
+            <Link href="/destinations" className="hover:underline"> Destinos</Link> &gt; 
+            <span className="font-semibold"> {currentDestination.name}</span>
+          </div>
+          <h1 className="text-5xl font-bold">{currentDestination.name}</h1>
+          
+          <Button variant="secondary" size="lg" className="bg-white text-primary hover:bg-gray-100">
+            <CalendarPlus className="mr-2 h-5 w-5" /> Añade tus fechas
+          </Button>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 pt-4 text-sm">
+            <div className="flex items-center">
+              <MapPin className="h-5 w-5 mr-2 text-primary-foreground/80" />
+              <span>{currentDestination.stats.activitiesCount} inscripciones y actividades</span>
+            </div>
+            <div className="flex items-center">
+              <Users className="h-5 w-5 mr-2 text-primary-foreground/80" />
+              <span>{currentDestination.stats.travelersCount} viajeros ya lo han disfrutado</span>
+            </div>
+            <div className="flex items-center">
+              <MessageSquare className="h-5 w-5 mr-2 text-primary-foreground/80" />
+              <span>{currentDestination.stats.reviewsCount.toLocaleString('es-ES')} opiniones reales</span>
+            </div>
+            <div className="flex items-center">
+              <Star className="h-5 w-5 mr-2 text-yellow-400 fill-yellow-400" />
+              <span>{currentDestination.stats.rating.toFixed(1)}/10 así nos puntúan</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Barra de Disponibilidad, Duración, Controles */}
+      <Card className="shadow-md">
+        <CardContent className="p-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-semibold">Disponibilidad:</span>
+            <Button variant="outline" size="sm">Hoy</Button>
+            <Button variant="outline" size="sm">Mañana</Button>
+            <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5">
+              <CalendarDays className="mr-2 h-4 w-4"/>Fechas
+            </Button>
+          </div>
+          <div className="text-muted-foreground">
+            {/* Ejemplo de texto, en una app real sería dinámico */}
+            {filteredActivities.length} excursiones y actividades en {currentDestination.name}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+              <LayoutGrid className="mr-2 h-4 w-4"/>Listado
+            </Button>
+            {/* <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+              <MapPin className="mr-2 h-4 w-4"/>Mapa
+            </Button> */}
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+              <ListFilter className="mr-2 h-4 w-4"/>Ordenar
+            </Button>
+          </div>
+        </CardContent>
       </Card>
 
+
       <div className="flex flex-col md:flex-row gap-8">
-        <aside className="w-full md:w-1/4 lg:w-1/5">
+        <aside className="w-full md:w-1/3 lg:w-1/4"> {/* Ajustar ancho del sidebar */}
           <Filters />
         </aside>
-        <main className="w-full md:w-3/4 lg:w-4/5">
+        <main className="w-full md:w-2/3 lg:w-3/4">
           {filteredActivities.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"> {/* Ajustar columnas para tarjetas más grandes */}
               {filteredActivities.map((activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
               ))}
@@ -72,7 +142,7 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
                 <p className="text-muted-foreground mb-4">
                   Intenta ajustar tus filtros o explora otros destinos.
                 </p>
-                <Button asChild>
+                <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Link href="/destinations">Explorar Destinos</Link>
                 </Button>
               </CardContent>
@@ -84,3 +154,5 @@ export default function ActivitiesPage({ searchParams }: { searchParams?: { dest
     </div>
   );
 }
+
+    

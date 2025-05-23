@@ -1,88 +1,116 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Clock, Star, DollarSign, ArrowRight, Info } from 'lucide-react'; // Info añadido para el tag de "desde"
+import { Card, CardContent } from '@/components/ui/card'; // CardFooter, CardHeader, CardTitle, CardDescription ya no se usan directamente
+import { Clock, Star, Languages, Heart, Zap, Ticket } from 'lucide-react'; // Zap para "Gratis", Ticket para "Cancelación gratuita"
+import { cn } from '@/lib/utils';
 
 export interface Activity {
   id: string;
   title: string;
   duration: string;
   rating: number;
-  priceRange: string; // Ej: "€50" o "€50 - €70"
+  opinions: number;
+  price: number; // Precio numérico
+  currency: string; // Ej: "€", "US$"
   image: string;
   dataAiHint: string;
   destination: string;
+  freeCancellation: boolean;
+  language: string; // Ej: "Español", "Español y otros idiomas"
+  isFree: boolean;
+  originalPrice?: number; // Precio original si hay descuento
 }
 
 interface ActivityCardProps {
   activity: Activity;
 }
 
-function StarRating({ rating, reviewsCount, maxStars = 5 }: { rating: number; reviewsCount?: number; maxStars?: number }) {
-  const fullStars = Math.floor(rating);
-  const halfStar = rating % 1 >= 0.5; // Considerar si se quiere media estrella visualmente
-  const emptyStars = maxStars - fullStars - (halfStar ? 1 : 0);
-
-  return (
-    <div className="flex items-center">
-      {[...Array(fullStars)].map((_, i) => (
-        <Star key={`full-${i}`} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-      ))}
-      {/* Si se implementa media estrella, ajustar aquí */}
-      {[...Array(emptyStars)].map((_, i) => (
-        <Star key={`empty-${i}`} className="h-4 w-4 text-gray-300" />
-      ))}
-      <span className="ml-1.5 text-xs text-muted-foreground">
-        {rating.toFixed(1)}/5
-        {reviewsCount && ` (${reviewsCount} opiniones)`}
-      </span>
-    </div>
-  );
-}
-
-
 export function ActivityCard({ activity }: ActivityCardProps) {
-  // Extraer el precio "Desde" si es un rango, o el precio directo
-  const priceDisplay = activity.priceRange.includes('-') ? activity.priceRange.split('-')[0].trim() : activity.priceRange;
-
   return (
-    <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
-      <CardHeader className="p-0 relative h-48">
-        <Image
-          src={activity.image}
-          alt={`Imagen de ${activity.title}`}
-          layout="fill"
-          objectFit="cover"
-          className="group-hover:scale-105 transition-transform duration-300"
-          data-ai-hint={activity.dataAiHint}
-        />
-      </CardHeader>
-      <CardContent className="p-4 flex-grow">
-        <CardTitle className="text-lg font-medium mb-1 text-primary group-hover:underline">{activity.title}</CardTitle>
-        {/* <CardDescription className="text-xs text-muted-foreground mb-2">{activity.destination}</CardDescription> */}
-        
-        <div className="flex items-center text-sm text-muted-foreground my-2">
-          <StarRating rating={activity.rating} reviewsCount={Math.floor(Math.random() * 200) + 50} /> {/* ReviewsCount simulado */}
+    <Link href={`/activities/${activity.id}`} className="block group rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full">
+      <Card className="flex flex-col h-full border-0"> {/* Quitamos borde de tarjeta y hacemos que tome altura completa */}
+        <div className="relative h-48 sm:h-56"> {/* Altura fija para la imagen */}
+          <Image
+            src={activity.image}
+            alt={`Imagen de ${activity.title}`}
+            layout="fill"
+            objectFit="cover"
+            className="group-hover:scale-105 transition-transform duration-300"
+            data-ai-hint={activity.dataAiHint}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 bg-black/30 hover:bg-black/50 text-white rounded-full h-8 w-8"
+            onClick={(e) => { e.preventDefault(); console.log('Favorito:', activity.id); }} // Prevenir navegación
+            aria-label="Añadir a favoritos"
+          >
+            <Heart className="h-4 w-4" />
+          </Button>
+          {activity.originalPrice && activity.price < activity.originalPrice && (
+             <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded">
+               OFERTA
+             </div>
+          )}
         </div>
-        <div className="flex items-center text-sm text-muted-foreground mb-1">
-          <Clock className="h-4 w-4 mr-1.5" />
-          <span>{activity.duration}</span>
-        </div>
-      </CardContent>
-      <CardFooter className="p-4 pt-2 border-t mt-auto"> {/* mt-auto para empujar al fondo si el contenido es variable */}
-        <div className="flex flex-col w-full">
-            <div className="flex items-baseline justify-end text-right mb-2">
-              <span className="text-xs text-muted-foreground mr-1">Desde</span>
-              <span className="text-xl font-bold text-primary">{priceDisplay}</span>
+
+        <CardContent className="p-4 flex-grow flex flex-col justify-between"> {/* Padding y flex para espaciado */}
+          <div>
+            <h3 className="text-md font-semibold text-primary mb-1.5 group-hover:underline leading-tight">
+              {activity.title}
+            </h3>
+            
+            <div className="flex items-center text-xs text-muted-foreground mb-1">
+              <Star className="h-3.5 w-3.5 mr-1 text-yellow-400 fill-yellow-400" />
+              <span>{activity.rating.toFixed(1)}/10</span>
+              <span className="mx-1">&middot;</span>
+              <span>{activity.opinions.toLocaleString('es-ES')} opiniones</span>
             </div>
-            <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href={`/activities/${activity.id}`}>
-                Ver Detalles <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-        </div>
-      </CardFooter>
-    </Card>
+
+            <div className="flex items-center text-xs text-muted-foreground mb-1">
+              <Clock className="h-3.5 w-3.5 mr-1" />
+              <span>{activity.duration}</span>
+            </div>
+            
+            <div className="flex items-center text-xs text-muted-foreground mb-2">
+              <Languages className="h-3.5 w-3.5 mr-1" />
+              <span>{activity.language}</span>
+            </div>
+          </div>
+          
+          <div className="mt-auto pt-2"> {/* Empujar esta sección al fondo */}
+            {activity.freeCancellation && (
+              <div className="flex items-center text-xs text-green-600 mb-1.5">
+                <Ticket className="h-3.5 w-3.5 mr-1" />
+                <span>Cancelación gratuita</span>
+              </div>
+            )}
+
+            <div className="text-right">
+              {activity.isFree ? (
+                <span className="text-2xl font-bold text-primary flex items-center justify-end">
+                  <Zap className="h-5 w-5 mr-1" /> ¡Gratis!
+                </span>
+              ) : (
+                <>
+                  {activity.originalPrice && activity.price < activity.originalPrice && (
+                    <span className="text-xs text-muted-foreground line-through mr-1.5">
+                      {activity.originalPrice.toFixed(2)}{activity.currency}
+                    </span>
+                  )}
+                  <span className="text-xs text-muted-foreground mr-1">desde</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {activity.price.toFixed(2)}{activity.currency}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
+
+    
