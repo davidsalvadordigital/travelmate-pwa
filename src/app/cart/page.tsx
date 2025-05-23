@@ -1,12 +1,27 @@
 
+"use client"; // Convertir a Client Component para usar hooks
+
+import { useState } from 'react'; // Importar useState para manejar estado del carrito
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, XCircle, ArrowRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useToast } from "@/hooks/use-toast"; // Importar useToast
 
-// Datos de ejemplo para el carrito (eliminar cuando se implemente lógica real)
-const mockCartItems = [
+interface CartItem {
+  id: string;
+  title: string;
+  image: string;
+  dataAiHint: string;
+  date: string;
+  time: string;
+  participants: number;
+  pricePerParticipant: number;
+  currency: string;
+}
+
+const initialMockCartItems: CartItem[] = [
   {
     id: '1',
     title: 'Paseo en barco por el Sena',
@@ -31,15 +46,30 @@ const mockCartItems = [
   }
 ];
 
-const showMockData = true; // Cambiar a false para ver el carrito vacío
+const showMockData = true;
 
 export default function CartPage() {
-  const cartItems = showMockData ? mockCartItems : [];
+  const [cartItems, setCartItems] = useState<CartItem[]>(showMockData ? initialMockCartItems : []);
+  const { toast } = useToast();
+
   const subtotal = cartItems.reduce((sum, item) => sum + item.pricePerParticipant * item.participants, 0);
   const currency = cartItems.length > 0 ? cartItems[0].currency : 'US$';
 
+  const handleRemoveItem = (itemId: string, itemTitle: string) => {
+    // En una app real, aquí se actualizaría el estado global o se llamaría a una API
+    // Por ahora, solo mostramos un toast y filtramos el mock localmente (si quieres simularlo completamente)
+    // setCartItems(prevItems => prevItems.filter(item => item.id !== itemId)); // Descomentar para simular eliminación real del UI
+    
+    toast({
+      title: "Artículo Eliminado",
+      description: `"${itemTitle}" se ha eliminado de tu carrito. (Simulación)`,
+      variant: "default", // O 'destructive' si prefieres
+    });
+    console.log(`Simulación: Eliminar artículo ${itemId} del carrito.`);
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8"> {/* Añadido py-8 */}
+    <div className="container mx-auto px-4 py-8">
       <div className="space-y-8">
         <CardHeader className="px-0 pt-0">
           <div className="flex items-center mb-2">
@@ -59,7 +89,7 @@ export default function CartPage() {
                       <Image
                         src={item.image}
                         alt={item.title}
-                        layout="fill"
+                        fill // Cambiado de layout="fill" a fill
                         objectFit="cover"
                         data-ai-hint={item.dataAiHint}
                       />
@@ -72,7 +102,13 @@ export default function CartPage() {
                         Precio: {(item.pricePerParticipant * item.participants).toFixed(2)} {item.currency}
                       </p>
                     </div>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 self-start sm:self-center shrink-0">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-destructive hover:bg-destructive/10 self-start sm:self-center shrink-0"
+                      onClick={() => handleRemoveItem(item.id, item.title)} // Añadir onClick
+                      aria-label="Eliminar del carrito"
+                    >
                       <Trash2 className="h-5 w-5" />
                       <span className="sr-only">Eliminar del carrito</span>
                     </Button>
@@ -91,7 +127,6 @@ export default function CartPage() {
                     <span>Subtotal:</span>
                     <span>{subtotal.toFixed(2)} {currency}</span>
                   </div>
-                  {/* Podrían ir descuentos o impuestos aquí */}
                   <div className="flex justify-between font-semibold text-lg text-foreground border-t pt-3 mt-3">
                     <span>Total Estimado:</span>
                     <span className="text-primary">{subtotal.toFixed(2)} {currency}</span>

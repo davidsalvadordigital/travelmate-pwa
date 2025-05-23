@@ -1,10 +1,12 @@
 
+"use client"; // Aseguramos que es un Client Component
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button'; // Added missing import
+import { Button } from '@/components/ui/button';
 import { Clock, Star, Languages, Heart, Zap, Ticket } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useToast } from "@/hooks/use-toast"; // Importar useToast
 
 export interface Activity {
   id: string;
@@ -12,15 +14,15 @@ export interface Activity {
   duration: string;
   rating: number;
   opinions: number;
-  price: number; // Precio numérico
-  currency: string; // Ej: "€", "US$"
+  price: number;
+  currency: string;
   image: string;
   dataAiHint: string;
   destination: string;
   freeCancellation: boolean;
-  language: string; // Ej: "Español", "Español y otros idiomas"
+  language: string;
   isFree: boolean;
-  originalPrice?: number; // Precio original si hay descuento
+  originalPrice?: number;
 }
 
 interface ActivityCardProps {
@@ -28,10 +30,23 @@ interface ActivityCardProps {
 }
 
 export function ActivityCard({ activity }: ActivityCardProps) {
+  const { toast } = useToast(); // Inicializar useToast
+
+  const handleAddToFavorites = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Prevenir navegación si el Link envuelve toda la tarjeta
+    e.stopPropagation(); // Prevenir que el click se propague al Link padre
+    console.log('Favorito:', activity.id);
+    toast({
+      title: "¡Añadido a Favoritos!",
+      description: `"${activity.title}" se ha añadido a tu lista de favoritos. (Simulación)`,
+      variant: "default",
+    });
+  };
+
   return (
     <Link href={`/activities/${activity.id}`} className="block group rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full">
-      <Card className="flex flex-col h-full border-0"> {/* Quitamos borde de tarjeta y hacemos que tome altura completa */}
-        <div className="relative h-48 sm:h-56"> {/* Altura fija para la imagen */}
+      <Card className="flex flex-col h-full border-0">
+        <div className="relative h-48 sm:h-56">
           <Image
             src={activity.image}
             alt={`Imagen de ${activity.title}`}
@@ -43,8 +58,8 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-2 right-2 bg-black/30 hover:bg-black/50 text-white rounded-full h-8 w-8"
-            onClick={(e) => { e.preventDefault(); console.log('Favorito:', activity.id); }} // Prevenir navegación
+            className="absolute top-2 right-2 bg-black/30 hover:bg-black/50 text-white rounded-full h-8 w-8 z-10" // Añadido z-10
+            onClick={handleAddToFavorites}
             aria-label="Añadir a favoritos"
           >
             <Heart className="h-4 w-4" />
@@ -56,7 +71,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           )}
         </div>
 
-        <CardContent className="p-4 flex-grow flex flex-col justify-between"> {/* Padding y flex para espaciado */}
+        <CardContent className="p-4 flex-grow flex flex-col justify-between">
           <div>
             <h3 className="text-md font-semibold text-primary mb-1.5 group-hover:underline leading-tight">
               {activity.title}
@@ -80,7 +95,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             </div>
           </div>
           
-          <div className="mt-auto pt-2"> {/* Empujar esta sección al fondo */}
+          <div className="mt-auto pt-2">
             {activity.freeCancellation && (
               <div className="flex items-center text-xs text-green-600 mb-1.5">
                 <Ticket className="h-3.5 w-3.5 mr-1" />

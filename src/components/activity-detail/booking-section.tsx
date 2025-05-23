@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -7,15 +8,14 @@ import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Users, Minus, Plus, ShoppingCart, Euro } from 'lucide-react'; // DollarSign cambiado por Euro
+import { CalendarIcon, Users, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale'; // Importar locale español
+import { es } from 'date-fns/locale';
 import type { Activity } from '@/components/activities/activity-card';
-import { useToast } from "@/hooks/use-toast"
-
+import { useToast } from "@/hooks/use-toast";
 
 interface BookingSectionProps {
-  activity: Activity & { priceRange: string }; 
+  activity: Activity; 
 }
 
 export function BookingSection({ activity }: BookingSectionProps) {
@@ -24,16 +24,13 @@ export function BookingSection({ activity }: BookingSectionProps) {
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const { toast } = useToast();
 
-  // Parseo de precio simplificado - asume que el límite inferior de priceRange es el precio por persona
-  const basePricePerPerson = parseFloat(activity.priceRange.split('-')[0].replace('€', '').trim()) || 50;
-
   useEffect(() => {
-    if (selectedDate && numberOfPeople > 0) {
-      setTotalPrice(basePricePerPerson * numberOfPeople);
+    if (selectedDate && numberOfPeople > 0 && activity.price !== undefined) {
+      setTotalPrice(activity.price * numberOfPeople);
     } else {
       setTotalPrice(null);
     }
-  }, [selectedDate, numberOfPeople, basePricePerPerson]);
+  }, [selectedDate, numberOfPeople, activity.price]);
 
   const handleBooking = () => {
     if (!selectedDate) {
@@ -52,19 +49,19 @@ export function BookingSection({ activity }: BookingSectionProps) {
       });
       return;
     }
-    // Proceder con la lógica de reserva
+    // Proceder con la lógica de reserva (simulación)
     console.log('Detalles de la reserva:', { activityId: activity.id, date: selectedDate, people: numberOfPeople, totalPrice });
     toast({
       title: "¡Reserva Iniciada!",
-      description: `Reserva para ${activity.title} el ${selectedDate ? format(selectedDate, 'PPP', { locale: es }) : ''} para ${numberOfPeople} persona(s). Total: €${totalPrice?.toFixed(2)}`,
-      variant: "default" // Usar default en lugar de success si no hay color específico
+      description: `Reserva para ${activity.title} el ${selectedDate ? format(selectedDate, 'PPP', { locale: es }) : ''} para ${numberOfPeople} persona(s). Total: ${activity.currency}${totalPrice?.toFixed(2)}`,
+      variant: "default"
     });
   };
 
   return (
     <Card className="sticky top-24 shadow-xl rounded-lg">
       <CardHeader>
-        <CardTitle className="text-2xl text-primary">Reservar Actividad</CardTitle> {/* Cambiado accent por primary */}
+        <CardTitle className="text-2xl text-primary">Reservar Actividad</CardTitle>
         <CardDescription>Selecciona la fecha y el número de participantes.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -87,8 +84,8 @@ export function BookingSection({ activity }: BookingSectionProps) {
                 selected={selectedDate}
                 onSelect={setSelectedDate}
                 initialFocus
-                locale={es} // Aplicar locale español al calendario
-                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } // Deshabilitar fechas pasadas
+                locale={es}
+                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
               />
             </PopoverContent>
           </Popover>
@@ -122,13 +119,12 @@ export function BookingSection({ activity }: BookingSectionProps) {
           </div>
         </div>
         
-        {totalPrice !== null && (
+        {totalPrice !== null && activity.price !== undefined && (
           <div className="pt-4 border-t">
             <p className="text-xl font-semibold text-foreground flex items-center justify-between">
               <span>Precio Total:</span>
-              <span className="flex items-center text-primary"> {/* Color primario para el precio */}
-                <Euro className="h-5 w-5 mr-1" />
-                {totalPrice.toFixed(2)}
+              <span className="flex items-center text-primary">
+                {activity.currency}{totalPrice.toFixed(2)}
               </span>
             </p>
           </div>
@@ -138,9 +134,9 @@ export function BookingSection({ activity }: BookingSectionProps) {
       <CardFooter>
         <Button 
           size="lg" 
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg" // Aumentar tamaño y padding
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg"
           onClick={handleBooking}
-          disabled={!selectedDate || numberOfPeople <= 0}
+          disabled={!selectedDate || numberOfPeople <= 0 || activity.price === undefined}
         >
           <ShoppingCart className="mr-2 h-5 w-5" /> Reservar Ahora
         </Button>
