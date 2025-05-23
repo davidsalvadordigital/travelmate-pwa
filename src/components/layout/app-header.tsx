@@ -9,7 +9,7 @@ import { Menu, MapPin, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, Ch
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState, useRef, useCallback, type FormEvent } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import type { Activity } from '@/components/activities/activity-card'; // Assuming Activity interface is here
+import type { Activity } from '@/components/activities/activity-card';
 import { SearchSuggestions, type Suggestion, type DestinationSuggestion, type ActivitySuggestionItem } from '@/components/home/search-suggestions';
 import { format } from 'date-fns';
 import { useCart } from '@/context/cart-context';
@@ -55,8 +55,8 @@ const desktopUtilityItems = [
 ];
 
 const desktopAuthButtons = [
-  { id: 'login', href: '/login', label: 'Iniciar Sesión', styleType: 'filled' as const },
-  { id: 'signup', href: '/signup', label: 'Regístrate', styleType: 'outlined' as const },
+  { id: 'login', href: '/login', label: 'Iniciar Sesión', styleClass: 'bg-white text-primary hover:bg-slate-200 focus-visible:ring-white' },
+  { id: 'signup', href: '/signup', label: 'Regístrate', styleClass: 'border-white text-white hover:bg-white hover:text-primary focus-visible:ring-white', variant: 'outline' as const },
 ];
 
 
@@ -133,12 +133,8 @@ function DesktopNav({ onLinkClick, itemCount, headerSearchProps }: { onLinkClick
           key={item.id}
           asChild
           onClick={onLinkClick}
-          className={`rounded-full px-3 py-1.5 h-9 sm:h-10 text-xs sm:text-sm ${
-            item.styleType === 'filled'
-              ? 'bg-white/90 text-primary hover:bg-white'
-              : 'border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary'
-          }`}
-          variant={item.styleType === 'outlined' ? 'outline' : 'default'}
+          className={`rounded-full px-3 py-1.5 h-9 sm:h-10 text-xs sm:text-sm ${item.styleClass}`}
+          variant={item.variant || 'default'}
         >
           <Link href={item.href}>{item.label}</Link>
         </Button>
@@ -152,7 +148,7 @@ function DesktopNav({ onLinkClick, itemCount, headerSearchProps }: { onLinkClick
               variant="ghost"
               size="icon"
               asChild
-              className="text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground rounded-md w-9 h-9 sm:w-10 sm:h-10"
+              className="text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground rounded-md w-9 h-9 sm:w-10 sm:h-10"
               title={item.label}
               aria-label={item.ariaLabel || item.label}
               onClick={onLinkClick}
@@ -168,7 +164,7 @@ function DesktopNav({ onLinkClick, itemCount, headerSearchProps }: { onLinkClick
             key={item.id}
             variant="ghost"
             asChild
-            className="text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm h-9 sm:h-10"
+            className="text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm h-9 sm:h-10"
             onClick={onLinkClick}
           >
             <Link href={item.href}>
@@ -178,12 +174,11 @@ function DesktopNav({ onLinkClick, itemCount, headerSearchProps }: { onLinkClick
           </Button>
         );
       })}
-      {/* Cart Icon with Item Count */}
       <Button
           variant="ghost"
           size="icon"
           asChild
-          className="text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground rounded-md w-9 h-9 sm:w-10 sm:h-10 relative"
+          className="text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground rounded-md w-9 h-9 sm:w-10 sm:h-10 relative"
           title="Carrito de Compras"
           aria-label="Carrito de Compras"
           onClick={onLinkClick}
@@ -203,7 +198,7 @@ function DesktopNav({ onLinkClick, itemCount, headerSearchProps }: { onLinkClick
 
 
 function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; itemCount: number }) {
-  const linkClassBase = 'w-full justify-start text-lg text-primary-foreground hover:bg-primary/80 py-3 px-4 rounded-md';
+  const linkClassBase = 'w-full justify-start text-lg text-primary-foreground hover:bg-primary-foreground/20 py-3 px-4 rounded-md';
   const iconClassBase = `mr-2 h-5 w-5 text-primary-foreground`;
 
   return (
@@ -284,24 +279,27 @@ function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; 
 
 
       <div className="pt-3 border-t border-primary-foreground/20 mt-3 space-y-2">
-        {desktopAuthButtons.map((item) => (
-          <Button
-            key={item.label}
-            variant={item.styleType === 'filled' ? 'default' : 'outline'}
-            asChild
-            className={`w-full justify-center text-lg py-3 rounded-md ${
-              item.styleType === 'filled'
-                ? 'bg-primary-foreground text-primary hover:bg-primary-foreground/90'
-                : 'border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10'
-            }`}
-            onClick={onLinkClick}
-          >
-            <Link href={item.href}>
-              {item.id === 'signup' ? <UserPlus className="mr-2 h-5 w-5" /> : <LogIn className="mr-2 h-5 w-5" />}
-              {item.label}
-            </Link>
-          </Button>
-        ))}
+        <Button
+          asChild
+          className="w-full justify-center text-lg py-3 rounded-md bg-white text-primary hover:bg-slate-200"
+          onClick={onLinkClick}
+        >
+          <Link href="/login">
+            <LogIn className="mr-2 h-5 w-5" />
+            Iniciar Sesión
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          className="w-full justify-center text-lg py-3 rounded-md border-white text-white hover:bg-white hover:text-primary"
+          onClick={onLinkClick}
+        >
+          <Link href="/signup">
+            <UserPlus className="mr-2 h-5 w-5" />
+            Regístrate
+          </Link>
+        </Button>
       </div>
     </nav>
   );
@@ -316,7 +314,6 @@ export function AppHeader() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const { itemCount } = useCart();
 
-  // Estado y lógica para el buscador del header
   const [headerSearchInput, setHeaderSearchInput] = useState('');
   const [headerSuggestions, setHeaderSuggestions] = useState<Suggestion[]>([]);
   const [showHeaderSuggestions, setShowHeaderSuggestions] = useState(false);
@@ -337,40 +334,43 @@ export function AppHeader() {
     }
     setHeaderLoadingSuggestions(true);
 
-    const normalizedQuery = normalizeStringHeader(query);
+    // Simular un pequeño retraso para la carga
+    // setTimeout(() => { // Removido para evitar complejidad innecesaria en este punto
+      const normalizedQuery = normalizeStringHeader(query);
 
-    const destinationCounts: { [key: string]: number } = {};
-    allActivitiesDataHeader.forEach(activity => {
-      if (normalizeStringHeader(activity.destination).includes(normalizedQuery)) {
-        destinationCounts[activity.destination] = (destinationCounts[activity.destination] || 0) + 1;
-      }
-    });
+      const destinationCounts: { [key: string]: number } = {};
+      allActivitiesDataHeader.forEach(activity => {
+        if (normalizeStringHeader(activity.destination).includes(normalizedQuery)) {
+          destinationCounts[activity.destination] = (destinationCounts[activity.destination] || 0) + 1;
+        }
+      });
 
-    const destSuggestions: DestinationSuggestion[] = Object.entries(destinationCounts)
-      .map(([name, count]) => ({
-        type: 'destination' as const,
-        name,
-        activityCount: count,
-        href: `/activities?destination=${encodeURIComponent(name)}`,
-      }))
-      .sort((a, b) => b.activityCount - a.activityCount)
-      .slice(0, 3); // Limitar a 3 para el header
+      const destSuggestions: DestinationSuggestion[] = Object.entries(destinationCounts)
+        .map(([name, count]) => ({
+          type: 'destination' as const,
+          name,
+          activityCount: count,
+          href: `/activities?destination=${encodeURIComponent(name)}`,
+        }))
+        .sort((a, b) => b.activityCount - a.activityCount)
+        .slice(0, 3);
 
-    const actSuggestions: ActivitySuggestionItem[] = allActivitiesDataHeader
-      .filter(activity => normalizeStringHeader(activity.title).includes(normalizedQuery))
-      .map(activity => ({
-        type: 'activity' as const,
-        id: activity.id,
-        title: activity.title,
-        destination: activity.destination,
-        href: `/activities/${activity.id}`,
-      }))
-      .slice(0, 3); // Limitar a 3 para el header
+      const actSuggestions: ActivitySuggestionItem[] = allActivitiesDataHeader
+        .filter(activity => normalizeStringHeader(activity.title).includes(normalizedQuery))
+        .map(activity => ({
+          type: 'activity' as const,
+          id: activity.id,
+          title: activity.title,
+          destination: activity.destination,
+          href: `/activities/${activity.id}`,
+        }))
+        .slice(0, 3);
 
-    const combinedSuggestions = [...destSuggestions, ...actSuggestions];
-    setHeaderSuggestions(combinedSuggestions);
-    setShowHeaderSuggestions(combinedSuggestions.length > 0 || query.trim().length > 0);
-    setHeaderLoadingSuggestions(false);
+      const combinedSuggestions = [...destSuggestions, ...actSuggestions];
+      setHeaderSuggestions(combinedSuggestions);
+      setShowHeaderSuggestions(combinedSuggestions.length > 0 || query.trim().length > 0);
+      setHeaderLoadingSuggestions(false);
+    // }, 150); // Pequeño retraso simulado para UX
   }, []);
 
   useEffect(() => {
@@ -413,7 +413,7 @@ export function AppHeader() {
   const handleHeaderSuggestionClick = useCallback(() => {
     setShowHeaderSuggestions(false);
     setHeaderSearchInput('');
-    setSheetOpen(false);
+    setSheetOpen(false); // Cerrar sheet si está abierto en móvil
   }, []);
 
   const handleHeaderSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -422,7 +422,7 @@ export function AppHeader() {
       router.push(`/activities?q=${encodeURIComponent(headerSearchInput.trim())}`);
       setShowHeaderSuggestions(false);
       setHeaderSearchInput('');
-      setSheetOpen(false);
+      setSheetOpen(false); // Cerrar sheet si está abierto en móvil
     }
   };
 
@@ -439,7 +439,6 @@ export function AppHeader() {
   }, [headerSearchWrapperRef]);
 
 
-  // Esqueleto para evitar parpadeo en carga inicial y SSR/hydration mismatch
   if (!mounted) {
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
@@ -447,18 +446,22 @@ export function AppHeader() {
           <div className="flex items-center">
             <Logo />
           </div>
-          <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden" /> {/* Placeholder para icono de menú */}
+          <div className="h-8 w-8 bg-primary-foreground/20 rounded-md animate-pulse md:hidden" />
           <div className="hidden md:flex items-center space-x-1 md:space-x-1.5 lg:space-x-2">
-             {/* Placeholder para el buscador condicional */}
-            <div className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative">
-              <div className="h-9 sm:h-10 bg-primary/80 rounded-full animate-pulse" />
+            {pathname !== '/' && (
+              <div className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative">
+                <div className="h-9 sm:h-10 bg-white/20 rounded-full animate-pulse" />
+              </div>
+            )}
+            <div className="h-9 sm:h-10 w-28 bg-white/90 rounded-full animate-pulse" /> {/* Iniciar Sesión */}
+            <div className="h-9 sm:h-10 w-28 border border-white rounded-full animate-pulse" /> {/* Regístrate */}
+            
+            <div className="h-9 sm:h-10 w-24 bg-primary-foreground/20 rounded-md animate-pulse" /> {/* Idioma */}
+            <div className="h-9 sm:h-10 w-16 bg-primary-foreground/20 rounded-md animate-pulse" /> {/* Moneda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary-foreground/20 rounded-md animate-pulse" /> {/* Ayuda */}
+            <div className="h-9 sm:h-10 w-9 bg-primary-foreground/20 rounded-md animate-pulse relative"> {/* Carrito */}
+              <div className="absolute -top-1 -right-1 bg-white text-primary text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center opacity-50 animate-pulse">?</div>
             </div>
-            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse" /> {/* Iniciar Sesión */}
-            <div className="h-9 sm:h-10 w-24 bg-primary/80 rounded-full animate-pulse" /> {/* Regístrate */}
-            <div className="h-9 sm:h-10 w-20 bg-primary/80 rounded-md animate-pulse" /> {/* Idioma */}
-            <div className="h-9 sm:h-10 w-16 bg-primary/80 rounded-md animate-pulse" /> {/* Moneda */}
-            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse" /> {/* Ayuda */}
-            <div className="h-9 sm:h-10 w-9 bg-primary/80 rounded-md animate-pulse" /> {/* Carrito */}
           </div>
         </div>
       </header>
@@ -477,13 +480,13 @@ export function AppHeader() {
         {isMobile ? (
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/80" aria-label="Abrir menú de navegación">
+              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/20" aria-label="Abrir menú de navegación">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[360px] bg-primary text-primary-foreground p-0 flex flex-col">
               <SheetHeader className="p-4 border-b border-primary-foreground/20">
-                <SheetTitle>Menú</SheetTitle> {/* Screen reader accessible title */}
+                <SheetTitle className="text-primary-foreground sr-only">Menú Principal</SheetTitle>
               </SheetHeader>
               <div className="flex-grow overflow-y-auto">
                 <MobileNavLinks onLinkClick={() => setSheetOpen(false)} itemCount={itemCount} />
@@ -513,3 +516,5 @@ export function AppHeader() {
     </header>
   );
 }
+
+    
