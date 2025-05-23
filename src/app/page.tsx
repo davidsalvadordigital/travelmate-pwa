@@ -1,7 +1,7 @@
 
 import { HeroSection } from '@/components/home/hero-section';
 import { PopularDestinations } from '@/components/home/popular-destinations';
-import { ActivityTypes } from '@/components/home/activity-types';
+import { FeaturedActivities } from '@/components/home/featured-activities'; // Cambiado de ActivityTypes
 import { UspSection } from '@/components/home/usp-section';
 
 export default function HomePage() {
@@ -16,7 +16,7 @@ export default function HomePage() {
         </section>
         
         <section className="py-10 mt-12 md:mt-16">
-          <ActivityTypes />
+          <FeaturedActivities /> {/* Reemplazado ActivityTypes */}
         </section>
 
         <div className="mt-12 md:mt-16"> {/* UspSection ya tiene su propio padding y bg, solo necesita margen */}

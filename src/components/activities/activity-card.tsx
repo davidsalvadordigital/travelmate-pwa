@@ -1,8 +1,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card'; // CardFooter, CardHeader, CardTitle, CardDescription ya no se usan directamente
-import { Clock, Star, Languages, Heart, Zap, Ticket } from 'lucide-react'; // Zap para "Gratis", Ticket para "Cancelación gratuita"
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button'; // Added missing import
+import { Clock, Star, Languages, Heart, Zap, Ticket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface Activity {
@@ -112,5 +113,3 @@ export function ActivityCard({ activity }: ActivityCardProps) {
     </Link>
   );
 }
-
-    
