@@ -1,11 +1,11 @@
 
 "use client"; 
 
-import { useState } from 'react'; // Importar useState
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button'; // Asegurarse de que Button está importado
+import { Button } from '@/components/ui/button';
 import { Clock, Star, Languages, Heart, Zap, Ticket } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast"; 
 import { cn } from '@/lib/utils';
@@ -25,6 +25,7 @@ export interface Activity {
   language: string;
   isFree: boolean;
   originalPrice?: number;
+  category: string; // Nuevo campo para la categoría de la actividad
 }
 
 interface ActivityCardProps {
@@ -33,15 +34,16 @@ interface ActivityCardProps {
 
 export function ActivityCard({ activity }: ActivityCardProps) {
   const { toast } = useToast();
-  const [isFavorite, setIsFavorite] = useState(false); // Estado para el favorito
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const handleToggleFavorite = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault(); 
     e.stopPropagation(); 
-    setIsFavorite(prev => !prev); // Cambiar el estado del favorito
+    const newFavoriteState = !isFavorite;
+    setIsFavorite(newFavoriteState); 
     toast({
-      title: isFavorite ? "Eliminado de Favoritos" : "¡Añadido a Favoritos!",
-      description: `"${activity.title}" ${isFavorite ? 'se ha eliminado de' : 'se ha añadido a'} tu lista de favoritos.`,
+      title: newFavoriteState ? "¡Añadido a Favoritos!" : "Eliminado de Favoritos",
+      description: `"${activity.title}" ${newFavoriteState ? 'se ha añadido a' : 'se ha eliminado de'} tu lista de favoritos.`,
       variant: "default",
     });
   };
@@ -100,7 +102,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           
           <div className="mt-auto pt-2">
             {activity.freeCancellation && (
-              <div className="flex items-center text-xs text-green-600 mb-1.5"> {/* Civitatis usa verde para esto */}
+              <div className="flex items-center text-xs text-green-600 mb-1.5">
                 <Ticket className="h-3.5 w-3.5 mr-1" />
                 <span>Cancelación gratuita</span>
               </div>
