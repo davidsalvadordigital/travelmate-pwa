@@ -44,7 +44,7 @@ const destinationDetails = {
     reviewsCount: 167363,
     rating: 9.1,
   },
-  heroImage: "https://placehold.co/1600x500.png",
+  heroImage: "https://placehold.co/1600x500.png", // Imagen de ejemplo más genérica para la cabecera
   dataAiHint: "ciudad paris"
 };
 
@@ -62,6 +62,15 @@ const categoryIdToNameMapping: { [key: string]: string } = {
   'excursiones': 'Excursiones',
   'gastronomia': 'Gastronomía',
   'espectaculos': 'Espectáculos',
+};
+
+// Función para normalizar cadenas (quitar acentos y convertir a minúsculas)
+const normalizeString = (str: string) => {
+  if (!str) return "";
+  return str
+    .normalize("NFD") // Descomponer caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, "") // Eliminar marcas diacríticas
+    .toLowerCase();
 };
 
 
@@ -91,16 +100,19 @@ export default function ActivitiesPage() {
     return allActivities.filter(activity => {
       let matches = true;
 
-      if (destinationParam && activity.destination.toLowerCase() !== destinationParam.toLowerCase()) {
+      // Filtrar por destino (insensible a acentos y mayúsculas/minúsculas)
+      if (destinationParam && normalizeString(activity.destination) !== normalizeString(destinationParam)) {
         matches = false;
       }
 
+      // Filtrar por precio
       if (activity.isFree && appliedFilters.priceRange[0] > 0) {
         matches = false;
       } else if (!activity.isFree && (activity.price < appliedFilters.priceRange[0] || activity.price > appliedFilters.priceRange[1])) {
         matches = false;
       }
 
+      // Filtrar por categorías
       if (appliedFilters.selectedCategories.length > 0) {
         const activityCategoryName = activity.category;
         const selectedCategoryNames = appliedFilters.selectedCategories.map(id => categoryIdToNameMapping[id]).filter(Boolean);
@@ -109,19 +121,30 @@ export default function ActivitiesPage() {
         }
       }
 
+      // Filtrar por características
       if (appliedFilters.selectedFeatures.includes('freeCancellation') && !activity.freeCancellation) {
         matches = false;
       }
+      // Para "Solo actividades en español", buscamos la subcadena "español" (insensible a mayúsculas)
       if (appliedFilters.selectedFeatures.includes('spanishOnly') && !activity.language.toLowerCase().includes('español')) {
         matches = false;
       }
+      // Aquí se añadirían otros filtros de características si los datos lo permiten
 
+      // Filtrar por fecha seleccionada
       if (selectedDate) {
         const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
         if (!activity.availableDates || !activity.availableDates.includes(formattedSelectedDate)) {
           matches = false;
         }
       }
+      
+      // Lógica para filtros de hora y duración (actualmente no implementada por falta de datos detallados)
+      // const activityStartTime = ... // Extraer hora de inicio de la actividad
+      // const activityDuration = ... // Extraer duración numérica de la actividad
+      // if (activityStartTime < appliedFilters.startTime[0] || activityStartTime > appliedFilters.startTime[1]) matches = false;
+      // if (activityDuration < appliedFilters.durationRange[0] || activityDuration > appliedFilters.durationRange[1]) matches = false;
+
 
       return matches;
     });
@@ -147,6 +170,9 @@ export default function ActivitiesPage() {
           <div className="text-sm">
             <Link href="/" className="hover:underline">Travely</Link> &gt;
             <Link href="/destinations" className="hover:underline"> Destinos</Link> &gt;
+            {/* Ejemplo de migas de pan más detalladas, podrían ser dinámicas en una app real */}
+            <Link href="/destinations?region=europa" className="hover:underline"> Europa</Link> &gt;
+            <Link href="/destinations?country=francia" className="hover:underline"> Francia</Link> &gt;
             <span className="font-semibold"> {currentDestination.name}</span>
           </div>
           <h1 className="text-5xl font-bold">{currentDestination.name}</h1>
@@ -263,3 +289,4 @@ export default function ActivitiesPage() {
     </div>
   );
 }
+
