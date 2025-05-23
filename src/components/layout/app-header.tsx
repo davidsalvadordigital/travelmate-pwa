@@ -3,21 +3,50 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'; // SheetTitle importada
 import { Input } from '@/components/ui/input';
-import { Menu, MapPin, Search as SearchIcon, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign } from 'lucide-react';
+import { Menu, MapPin, Search as SearchIconLucide, BookMarked, HelpCircle, ShoppingCart, UserPlus, LogIn, ChevronDown, Globe, DollarSign, ArrowRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useEffect, useState, useRef, useCallback, type FormEvent } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import type { Activity } from '@/components/activities/activity-card'; // Importar Activity
+import { SearchSuggestions, type Suggestion, type DestinationSuggestion, type ActivitySuggestionItem } from '@/components/home/search-suggestions'; // Importar SearchSuggestions
+import { format } from 'date-fns'; // Importar format
 
-// Main navigation items - KEPT FOR MOBILE MENU
+// TEMPORAL: Copia de datos y función de normalización para prototipado en AppHeader
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(today.getDate() + 1);
+const dayAfterTomorrow = new Date(today);
+dayAfterTomorrow.setDate(today.getDate() + 2);
+
+const formatDateHeader = (date: Date): string => format(date, 'yyyy-MM-dd');
+
+const allActivitiesDataHeader: Activity[] = [
+  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), formatDateHeader(tomorrow), formatDateHeader(dayAfterTomorrow), '2024-09-15', '2024-09-16'], startTimeNumeric: 14, durationHoursNumeric: 1 },
+  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeader(tomorrow), formatDateHeader(dayAfterTomorrow), '2024-09-17'], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), '2024-09-15', '2024-09-18'], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
+  { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), formatDateHeader(tomorrow)], startTimeNumeric: 9, durationHoursNumeric: 2.5 },
+  { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDateHeader(dayAfterTomorrow), '2024-09-20'], startTimeNumeric: 8, durationHoursNumeric: 4 },
+  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeader(today), formatDateHeader(tomorrow)], startTimeNumeric: 9, durationHoursNumeric: 3 },
+  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeader(today), formatDateHeader(dayAfterTomorrow)], startTimeNumeric: 10, durationHoursNumeric: 3 },
+];
+
+const normalizeStringHeader = (str: string) => {
+  if (!str) return "";
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+};
+// FIN TEMPORAL
+
 const mainNavItemsForMobile = [
   { href: '/destinations', label: 'Destinos', icon: MapPin },
-  { href: '/activities', label: 'Actividades', icon: SearchIcon },
+  { href: '/activities', label: 'Actividades', icon: SearchIconLucide },
   { href: '/bookings', label: 'Mis Reservas', icon: BookMarked },
 ];
 
-// Desktop utility items (selectors, help, cart)
 const desktopUtilityItems = [
   { id: 'lang-selector', label: 'Español', icon: Globe, dropdownIcon: ChevronDown, href: '#', ariaLabel: 'Seleccionar Idioma' },
   { id: 'currency-selector', label: 'US$', icon: DollarSign, dropdownIcon: ChevronDown, href: '#', ariaLabel: 'Seleccionar Moneda' },
@@ -25,7 +54,6 @@ const desktopUtilityItems = [
   { id: 'cart', href: '/cart', label: 'Carrito', icon: ShoppingCart, isIconOnly: true, ariaLabel: 'Carrito de Compras' },
 ];
 
-// Auth buttons for desktop
 const desktopAuthButtons = [
   { id: 'login', href: '/login', label: 'Iniciar Sesión', styleType: 'filled' as const },
   { id: 'signup', href: '/signup', label: 'Regístrate', styleType: 'outlined' as const },
@@ -37,22 +65,6 @@ function Logo() {
     <Link href="/" className="text-3xl font-bold text-primary-foreground hover:opacity-80 transition-opacity" aria-label="Página de inicio de Travely">
       Travely
     </Link>
-  );
-}
-
-function DesktopSearchForm() {
-  return (
-    <form className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 flex items-center bg-white rounded-full px-1 py-0.5 shadow-sm h-9 sm:h-10">
-      <Input
-        type="search"
-        placeholder="¿A dónde vas a viajar?"
-        className="flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-xs sm:text-sm h-full text-gray-700 placeholder-gray-400 pl-3 bg-transparent"
-        aria-label="Buscar destinos o actividades"
-      />
-      <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-7 w-7 sm:h-8 sm:w-8 shrink-0">
-        <SearchIcon className="h-3.5 w-3.5 sm:h-4 sm:h-4" />
-      </Button>
-    </form>
   );
 }
 
@@ -94,7 +106,6 @@ function DesktopNav({ onLinkClick }: { onLinkClick?: () => void }) {
             </Button>
           );
         }
-        // Selectors (Language, Currency)
         return (
           <Button
             key={item.id}
@@ -104,7 +115,6 @@ function DesktopNav({ onLinkClick }: { onLinkClick?: () => void }) {
             onClick={onLinkClick}
           >
             <Link href={item.href}>
-              {/* <item.icon className="h-4 w-4 mr-1 hidden sm:inline-block" /> */}
               {item.label}
               {item.dropdownIcon && <item.dropdownIcon className="h-4 w-4 ml-1 opacity-70" />}
             </Link>
@@ -122,7 +132,6 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
 
   return (
     <nav className="flex flex-col space-y-1 p-4">
-      {/* Main nav items retained for mobile */}
       {mainNavItemsForMobile.map((item) => (
         <Button
           key={item.label}
@@ -140,7 +149,6 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
       
       <div className="pt-3 border-t border-primary-foreground/20 mt-3" />
 
-      {/* Language and Currency Selectors for Mobile */}
       {[
         { id: 'lang-selector-mobile', label: 'Español', icon: Globe, href: '#', ariaLabel: 'Seleccionar Idioma' },
         { id: 'currency-selector-mobile', label: 'US$', icon: DollarSign, href: '#', ariaLabel: 'Seleccionar Moneda' },
@@ -161,7 +169,6 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
 
       <div className="pt-3 border-t border-primary-foreground/20 mt-3" />
       
-      {/* Utility icons for mobile */}
       {[
         { href: '/help', label: 'Ayuda', icon: HelpCircle, ariaLabel: 'Centro de Ayuda' },
         { href: '/cart', label: 'Carrito', icon: ShoppingCart, ariaLabel: 'Carrito de Compras' },
@@ -183,7 +190,6 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
       ))}
 
       <div className="pt-3 border-t border-primary-foreground/20 mt-3 space-y-2">
-        {/* Auth buttons for mobile */}
         {desktopAuthButtons.map((item) => (
           <Button
             key={item.label}
@@ -211,14 +217,131 @@ function MobileNavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
 export function AppHeader() {
   const isMobile = useIsMobile();
   const pathname = usePathname();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  // State for header search
+  const [headerSearchInput, setHeaderSearchInput] = useState('');
+  const [headerSuggestions, setHeaderSuggestions] = useState<Suggestion[]>([]);
+  const [showHeaderSuggestions, setShowHeaderSuggestions] = useState(false);
+  const [headerLoadingSuggestions, setHeaderLoadingSuggestions] = useState(false);
+  const headerSearchWrapperRef = useRef<HTMLDivElement>(null);
+  const headerDebounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Esqueleto para evitar parpadeo en carga inicial y SSR/hydration mismatch
+  const fetchHeaderSuggestions = useCallback((query: string) => {
+    if (query.trim() === '') {
+      setHeaderSuggestions([]);
+      setShowHeaderSuggestions(false);
+      setHeaderLoadingSuggestions(false);
+      return;
+    }
+    setHeaderLoadingSuggestions(true);
+
+    const normalizedQuery = normalizeStringHeader(query);
+
+    const destinationCounts: { [key: string]: number } = {};
+    allActivitiesDataHeader.forEach(activity => {
+      if (normalizeStringHeader(activity.destination).includes(normalizedQuery)) {
+        destinationCounts[activity.destination] = (destinationCounts[activity.destination] || 0) + 1;
+      }
+    });
+
+    const destSuggestions: DestinationSuggestion[] = Object.entries(destinationCounts)
+      .map(([name, count]) => ({
+        type: 'destination' as const,
+        name,
+        activityCount: count,
+        href: `/activities?destination=${encodeURIComponent(name)}`,
+      }))
+      .sort((a, b) => b.activityCount - a.activityCount)
+      .slice(0, 5);
+
+    const actSuggestions: ActivitySuggestionItem[] = allActivitiesDataHeader
+      .filter(activity => normalizeStringHeader(activity.title).includes(normalizedQuery))
+      .map(activity => ({
+        type: 'activity' as const,
+        id: activity.id,
+        title: activity.title,
+        destination: activity.destination,
+        href: `/activities/${activity.id}`,
+      }))
+      .slice(0, 5);
+
+    const combinedSuggestions = [...destSuggestions, ...actSuggestions];
+    setHeaderSuggestions(combinedSuggestions);
+    setShowHeaderSuggestions(combinedSuggestions.length > 0 || query.trim().length > 0);
+    setHeaderLoadingSuggestions(false);
+  }, []);
+
+  useEffect(() => {
+    if (headerDebounceTimeoutRef.current) {
+      clearTimeout(headerDebounceTimeoutRef.current);
+    }
+    if (headerSearchInput.trim() !== '') {
+      setHeaderLoadingSuggestions(true);
+      headerDebounceTimeoutRef.current = setTimeout(() => {
+        fetchHeaderSuggestions(headerSearchInput);
+      }, 300);
+    } else {
+      setHeaderSuggestions([]);
+      setShowHeaderSuggestions(false);
+      setHeaderLoadingSuggestions(false);
+    }
+    return () => {
+      if (headerDebounceTimeoutRef.current) {
+        clearTimeout(headerDebounceTimeoutRef.current);
+      }
+    };
+  }, [headerSearchInput, fetchHeaderSuggestions]);
+
+  const handleHeaderInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setHeaderSearchInput(value);
+    if (value.trim() !== '') {
+      setShowHeaderSuggestions(true);
+    } else {
+      setShowHeaderSuggestions(false);
+    }
+  };
+
+  const handleHeaderInputFocus = () => {
+    if (headerSearchInput.trim() !== '' && headerSuggestions.length > 0) {
+      setShowHeaderSuggestions(true);
+    }
+  };
+
+  const handleHeaderSuggestionClick = useCallback(() => {
+    setShowHeaderSuggestions(false);
+    setHeaderSearchInput('');
+  }, []);
+
+  const handleHeaderSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (headerSearchInput.trim()) {
+      router.push(`/activities?q=${encodeURIComponent(headerSearchInput.trim())}`);
+      setShowHeaderSuggestions(false);
+      setHeaderSearchInput('');
+    }
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (headerSearchWrapperRef.current && !headerSearchWrapperRef.current.contains(event.target as Node)) {
+        setShowHeaderSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [headerSearchWrapperRef]);
+
+
   if (!mounted) {
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
@@ -226,9 +349,7 @@ export function AppHeader() {
           <div className="text-3xl font-bold">Travely</div> {/* Placeholder Logo */}
           <div className="h-8 w-8 bg-primary/80 rounded-md animate-pulse md:hidden"></div> {/* Placeholder para icono de menú */}
           <div className="hidden md:flex items-center space-x-2">
-            {/* Simplified skeleton: Always include a placeholder for the search bar area.
-                The actual search bar is conditionally rendered based on pathname when mounted.
-            */}
+            {/* Simplified skeleton: Always include a placeholder for the search bar area. */}
             <div className="h-9 w-48 md:w-64 lg:w-96 bg-primary/80 rounded-full animate-pulse"></div> {/* Search bar skeleton */}
             <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Login skeleton */}
             <div className="h-9 w-24 bg-primary/80 rounded-full animate-pulse"></div> {/* Signup skeleton */}
@@ -249,9 +370,38 @@ export function AppHeader() {
           <Logo />
         </div>
 
-        {!isMobile && pathname !== '/' && ( // Solo mostrar si no es mobile Y no es la homepage
+        {!isMobile && pathname !== '/' && (
           <div className="flex-1 flex justify-center items-center min-w-0 px-2">
-            <DesktopSearchForm />
+             <form
+                onSubmit={handleHeaderSearchSubmit}
+                className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative"
+                ref={headerSearchWrapperRef}
+              >
+                <div className="flex items-center bg-white p-1 rounded-full shadow-sm h-9 sm:h-10">
+                  <SearchIconLucide className="text-muted-foreground ml-3 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  <Input
+                    type="search"
+                    placeholder="¿A dónde vas a viajar?"
+                    className="flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-xs sm:text-sm h-full text-gray-700 placeholder-gray-400 pl-2 bg-transparent"
+                    aria-label="Buscar destinos o actividades en cabecera"
+                    value={headerSearchInput}
+                    onChange={handleHeaderInputChange}
+                    onFocus={handleHeaderInputFocus}
+                    autoComplete="off"
+                  />
+                  <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-7 w-7 sm:h-8 sm:w-8 shrink-0 mr-0.5">
+                    <SearchIconLucide className="h-3.5 w-3.5 sm:h-4 sm:h-4" />
+                  </Button>
+                </div>
+                {showHeaderSuggestions && (
+                  <SearchSuggestions
+                    suggestions={headerSuggestions}
+                    searchTerm={headerSearchInput}
+                    onSuggestionClick={handleHeaderSuggestionClick}
+                    loading={headerLoadingSuggestions}
+                  />
+                )}
+              </form>
           </div>
         )}
         
@@ -264,8 +414,7 @@ export function AppHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[360px] bg-primary text-primary-foreground p-0 flex flex-col">
               <SheetHeader className="p-4 border-b border-primary-foreground/20">
-                <SheetTitle className="sr-only">Menú Principal</SheetTitle> {/* Visually hidden title for accessibility */}
-                <div className="text-2xl font-bold text-primary-foreground text-left">Menú</div>
+                <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">Menú</SheetTitle>
               </SheetHeader>
               <div className="flex-grow overflow-y-auto">
                 <MobileNavLinks onLinkClick={() => setSheetOpen(false)} />
@@ -279,3 +428,5 @@ export function AppHeader() {
     </header>
   );
 }
+
+    
