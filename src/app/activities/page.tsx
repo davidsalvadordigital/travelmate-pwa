@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { ActivityCard, type Activity } from '@/components/activities/activity-card';
 import { Filters, type FilterState } from '@/components/activities/filters';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,33 +16,39 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 const today = new Date();
+today.setHours(0, 0, 0, 0); // Normalizar a medianoche para comparaciones de fecha consistentes
+
 const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate() + 1);
+
 const dayAfterTomorrow = new Date(today);
 dayAfterTomorrow.setDate(today.getDate() + 2);
 
 const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
 
+// Datos de ejemplo - Asegúrate que la interfaz Activity tiene 'category', 'availableDates', 'startTimeNumeric', 'durationHoursNumeric'
 const allActivities: Activity[] = [
   { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-15', '2024-09-16'], startTimeNumeric: 14, durationHoursNumeric: 1 },
   { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDate(tomorrow), formatDate(dayAfterTomorrow), '2024-09-17'], startTimeNumeric: 10, durationHoursNumeric: 3 },
   { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDate(today), '2024-09-15', '2024-09-18'], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
   { id: '4', title: 'Free tour por París ¡Gratis!', duration: '2.5h', rating: 9.6, opinions: 12539, price: 0, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'París monumental', destination: 'París', freeCancellation: true, language: 'Español', isFree: true, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow)], startTimeNumeric: 9, durationHoursNumeric: 2.5 },
   { id: '5', title: 'Excursión al Palacio de Versalles', duration: '4h', rating: 7.3, opinions: 1914, price: 96.28, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Palacio Versalles jardines', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: [formatDate(dayAfterTomorrow), '2024-09-20'], startTimeNumeric: 8, durationHoursNumeric: 4 },
-  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow)] }, // Duración y hora de inicio no aplican tan directamente
+  { id: '6', title: 'Traslados en París', duration: 'Variable', rating: 9.4, opinions: 20363, price: 57.76, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coche ciudad', destination: 'París', freeCancellation: false, language: 'No aplica', isFree: false, category: 'Traslados', availableDates: [formatDate(today), formatDate(tomorrow), formatDate(dayAfterTomorrow)] },
   { id: '7', title: 'Cata de Vinos Franceses en Le Marais', duration: '2 horas', rating: 9.2, opinions: 320, price: 75.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vino copas', destination: 'París', freeCancellation: true, language: 'Español, Inglés', isFree: false, category: 'Gastronomía', availableDates: ['2024-09-10', '2024-09-17', '2024-09-24'], startTimeNumeric: 18, durationHoursNumeric: 2 },
   { id: '8', title: 'Espectáculo Moulin Rouge con Cena', duration: '4 horas', rating: 8.9, opinions: 1250, price: 180.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Moulin Rouge', destination: 'París', freeCancellation: false, language: 'Internacional', isFree: false, category: 'Espectáculos', availableDates: [formatDate(tomorrow), '2024-09-12', '2024-09-19'], startTimeNumeric: 20, durationHoursNumeric: 4 },
   { id: '9', title: 'Tour Nocturno por París Iluminado', duration: '3 horas', rating: 9.0, opinions: 650, price: 45.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'parís noche', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(tomorrow), '2024-09-21'], startTimeNumeric: 21, durationHoursNumeric: 3 },
   { id: '10', title: 'Clase de Cocina Francesa', duration: '3.5 horas', rating: 9.5, opinions: 180, price: 95.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'cocina clase', destination: 'París', freeCancellation: true, language: 'Español, Francés', isFree: false, category: 'Gastronomía', availableDates: ['2024-09-11', '2024-09-18', '2024-09-25'], startTimeNumeric: 10, durationHoursNumeric: 3.5 },
-  { id: '11', title: 'Excursión de 2 días a Normandía y Playas del Desembarco', duration: '2 días', rating: 8.5, opinions: 450, price: 250.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'normandía playas', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: ['2024-10-01', '2024-10-15'], startTimeNumeric: 7, durationHoursNumeric: 48 }, // 2 días = 48 horas
+  { id: '11', title: 'Excursión de 2 días a Normandía y Playas del Desembarco', duration: '2 días', rating: 8.5, opinions: 450, price: 250.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'normandía playas', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Excursiones', availableDates: ['2024-10-01', '2024-10-15'], startTimeNumeric: 7, durationHoursNumeric: 48 },
+  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDate(today), formatDate(tomorrow)], startTimeNumeric: 9, durationHoursNumeric: 3 },
+  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDate(today), formatDate(dayAfterTomorrow)], startTimeNumeric: 10, durationHoursNumeric: 3 },
 ];
 
 const destinationDetails = {
-  name: "París",
+  name: "París", // Nombre por defecto si no hay parámetro
   country: "Francia",
   region: "Región de París Isla de Francia",
   stats: {
-    activitiesCount: allActivities.length, // Actualizado para reflejar el total
+    activitiesCount: allActivities.length, 
     travelersCount: "4.2M",
     reviewsCount: 167363,
     rating: 9.1,
@@ -52,9 +58,9 @@ const destinationDetails = {
 };
 
 const initialFilterState: FilterState = {
-  startTime: [0, 24], // [minHour, maxHour]
-  priceRange: [0, 600], // [minPrice, maxPrice]
-  durationRange: [0, 10], // [minDurationHours, maxDurationHours], 0 para "cualquiera", 10 para "10+ horas"
+  startTime: [0, 24],
+  priceRange: [0, 600],
+  durationRange: [0, 10],
   selectedCategories: [],
   selectedFeatures: [],
 };
@@ -76,14 +82,13 @@ const normalizeString = (str: string) => {
     .toLowerCase();
 };
 
-
 export default function ActivitiesPage() {
   const searchParamsHook = useSearchParams();
   const destinationParam = searchParamsHook.get('destination');
   const typeParam = searchParamsHook.get('type');
+  const queryParam = searchParamsHook.get('q'); // Para búsqueda genérica
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(() => {
     const initialState = { ...initialFilterState };
     if (typeParam && categoryIdToNameMapping[typeParam]) {
@@ -92,22 +97,61 @@ export default function ActivitiesPage() {
     return initialState;
   });
 
-  const currentDestinationName = destinationParam || destinationDetails.name;
-  const currentDestination = { ...destinationDetails, name: currentDestinationName, stats: {...destinationDetails.stats, activitiesCount: allActivities.filter(act => normalizeString(act.destination) === normalizeString(currentDestinationName)).length } };
+  const currentDestinationName = destinationParam || (queryParam ? `Resultados para "${queryParam}"` : destinationDetails.name);
+  
+  const activitiesForDestination = useMemo(() => {
+    if (destinationParam) {
+      return allActivities.filter(act => normalizeString(act.destination) === normalizeString(destinationParam));
+    }
+    // Si no hay destinationParam pero sí queryParam, filtramos por queryParam inicialmente
+    if (queryParam) {
+      const normalizedQ = normalizeString(queryParam);
+      return allActivities.filter(activity => 
+        normalizeString(activity.title).includes(normalizedQ) ||
+        normalizeString(activity.destination).includes(normalizedQ) ||
+        (activity.category && normalizeString(activity.category).includes(normalizedQ))
+      );
+    }
+    return allActivities; // Si no hay ni destination ni query, mostrar todas (o las de París por defecto)
+  }, [destinationParam, queryParam]);
 
+
+  const currentDestination = { 
+    ...destinationDetails, 
+    name: currentDestinationName, 
+    stats: {
+      ...destinationDetails.stats, 
+      activitiesCount: activitiesForDestination.length 
+    } 
+  };
 
   const handleFilterChange = useCallback((newFilters: FilterState) => {
     setAppliedFilters(newFilters);
   }, []);
 
   const filteredActivities = useMemo(() => {
-    return allActivities.filter(activity => {
-      // Filtrar por destino (insensible a acentos y mayúsculas/minúsculas)
-      if (destinationParam && normalizeString(activity.destination) !== normalizeString(destinationParam)) {
-        return false;
+    let activitiesToFilter = activitiesForDestination;
+
+    // Si hay un queryParam y no un destinationParam específico, la lista base ya está filtrada por queryParam.
+    // Si hay un destinationParam, empezamos con las actividades de ese destino.
+    // Si no hay ninguno, empezamos con todas las actividades.
+
+    return activitiesToFilter.filter(activity => {
+      // Si hay un queryParam y el filtro de destino no está activo, ya filtramos por q.
+      // Si hay un destinationParam, ya filtramos por destino.
+      // Si hay un queryParam Y un destinationParam, la lógica actual prioriza destinationParam
+      // para la base, lo cual está bien.
+      
+      // Filtro por query general si no hay un destinationParam y sí un queryParam
+      if (queryParam && !destinationParam) {
+        const normalizedQ = normalizeString(queryParam);
+        const matchesQuery = normalizeString(activity.title).includes(normalizedQ) ||
+                             normalizeString(activity.destination).includes(normalizedQ) ||
+                             (activity.category && normalizeString(activity.category).includes(normalizedQ));
+        if (!matchesQuery) return false;
       }
 
-      // Filtrar por precio
+
       if (activity.isFree && appliedFilters.priceRange[0] > 0) {
         return false;
       }
@@ -115,7 +159,6 @@ export default function ActivitiesPage() {
         return false;
       }
 
-      // Filtrar por categorías
       if (appliedFilters.selectedCategories.length > 0) {
         const activityCategoryName = activity.category;
         const selectedCategoryNames = appliedFilters.selectedCategories.map(id => categoryIdToNameMapping[id]).filter(Boolean);
@@ -124,7 +167,6 @@ export default function ActivitiesPage() {
         }
       }
 
-      // Filtrar por características
       if (appliedFilters.selectedFeatures.includes('freeCancellation') && !activity.freeCancellation) {
         return false;
       }
@@ -132,7 +174,6 @@ export default function ActivitiesPage() {
         return false;
       }
       
-      // Filtrar por fecha seleccionada
       if (selectedDate) {
         const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
         if (!activity.availableDates || !activity.availableDates.includes(formattedSelectedDate)) {
@@ -140,10 +181,8 @@ export default function ActivitiesPage() {
         }
       }
       
-      // Filtrar por hora de inicio
       if (activity.startTimeNumeric !== undefined) {
         const [minStartTime, maxStartTime] = appliedFilters.startTime;
-        // Si el slider está en [0, 24], no se aplica filtro de hora
         if (!(minStartTime === 0 && maxStartTime === 24)) {
           if (activity.startTimeNumeric < minStartTime || activity.startTimeNumeric > maxStartTime) {
             return false;
@@ -151,31 +190,29 @@ export default function ActivitiesPage() {
         }
       }
 
-      // Filtrar por duración
       if (activity.durationHoursNumeric !== undefined) {
         const [minDuration, maxDuration] = appliedFilters.durationRange;
-         // Si el slider está en [0, 10] (0 es "cualquiera", 10 es "10+"), no se aplica filtro por defecto si es 0.
-        if (minDuration > 0) { // Solo aplicar filtro si minDuration es mayor a 0 ("cualquiera")
-            if (maxDuration === 10) { // 10 en el slider significa "10 horas o más"
-                if (activity.durationHoursNumeric < minDuration) return false;
-            } else {
-                if (activity.durationHoursNumeric < minDuration || activity.durationHoursNumeric > maxDuration) {
-                    return false;
-                }
+        if (minDuration > 0) {
+          if (maxDuration === 10) {
+            if (activity.durationHoursNumeric < minDuration) return false;
+          } else {
+            if (activity.durationHoursNumeric < minDuration || activity.durationHoursNumeric > maxDuration) {
+              return false;
             }
+          }
         }
       }
 
       return true;
     });
-  }, [destinationParam, appliedFilters, selectedDate]);
+  }, [activitiesForDestination, appliedFilters, selectedDate, queryParam, destinationParam]);
 
   const handleSelectDate = (date: Date | undefined) => {
     setSelectedDate(date);
   };
 
   return (
-    <div className="space-y-0"> {/* Eliminado space-y-8 para que la cabecera pegue arriba */}
+    <div className="space-y-0">
       <section className="relative rounded-b-lg overflow-hidden shadow-lg">
         <Image
           src={currentDestination.heroImage}
@@ -186,13 +223,13 @@ export default function ActivitiesPage() {
           data-ai-hint={currentDestination.dataAiHint}
           priority
         />
-        <div className="relative z-10 p-8 text-white space-y-6 container mx-auto px-4"> {/* Añadido py-8 aquí */}
+        <div className="relative z-10 p-8 text-white space-y-6 container mx-auto px-4 py-8">
           <div className="text-sm">
             <Link href="/" className="hover:underline">Travely</Link> &gt;
             <Link href="/destinations" className="hover:underline"> Destinos</Link> &gt;
             <Link href="/destinations?region=europa" className="hover:underline"> Europa</Link> &gt;
             <Link href="/destinations?country=francia" className="hover:underline"> Francia</Link> &gt;
-            <span className="font-semibold"> {currentDestination.name}</span>
+            <span className="font-semibold"> {destinationParam || (queryParam ? `Búsqueda: ${queryParam}` : destinationDetails.name)}</span>
           </div>
           <h1 className="text-5xl font-bold">{currentDestination.name}</h1>
           
@@ -218,7 +255,7 @@ export default function ActivitiesPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 pt-4 text-sm">
             <div className="flex items-center">
               <MapPin className="h-5 w-5 mr-2 text-primary-foreground/80" />
-              <span>{currentDestination.stats.activitiesCount} inscripciones y actividades</span>
+              <span>{filteredActivities.length} {filteredActivities.length === 1 ? 'actividad' : 'actividades'}</span>
             </div>
             <div className="flex items-center">
               <Users className="h-5 w-5 mr-2 text-primary-foreground/80" />
