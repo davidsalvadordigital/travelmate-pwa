@@ -1,5 +1,6 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BadgeDollarSign, Users, CheckCircle2, ShieldCheck, SmilePlus } from 'lucide-react'; // Cambiado Smile por SmilePlus
+import { BadgeDollarSign, Users, CheckCircle2, ShieldCheck, SmilePlus } from 'lucide-react';
 
 const usps = [
   { title: 'Mejor Precio Garantizado', description: 'Encuentra las mejores ofertas en actividades en todo el mundo.', icon: BadgeDollarSign },
@@ -11,7 +12,7 @@ const usps = [
 
 export function UspSection() {
   return (
-    <section className="bg-secondary py-16 rounded-xl">
+    <section className="bg-muted py-16"> {/* Cambiado bg-secondary a bg-muted y quitado rounded-xl */}
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-foreground mb-10 text-center">¿Por Qué Reservar Con Travely?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
