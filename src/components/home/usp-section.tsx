@@ -12,7 +12,7 @@ const usps = [
 
 export function UspSection() {
   return (
-    <section className="bg-muted py-16"> {/* Cambiado bg-secondary a bg-muted y quitado rounded-xl */}
+    <section className="bg-secondary py-16"> {/* Fondo rosa pálido de ancho completo */}
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-foreground mb-10 text-center">¿Por Qué Reservar Con Travely?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">

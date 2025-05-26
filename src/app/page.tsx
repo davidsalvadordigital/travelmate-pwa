@@ -28,7 +28,7 @@ export default function HomePage() {
         </section>
       </div>
 
-      {/* Sección USP: el fondo bg-muted se extiende a lo ancho, el contenido se centra con un container interno */}
+      {/* Sección USP: el fondo bg-secondary se extiende a lo ancho, el contenido se centra con un container interno */}
       <section className="mt-12 md:mt-16">
         <UspSection />
       </section>
