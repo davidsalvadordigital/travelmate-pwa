@@ -23,12 +23,13 @@ dayAfterTomorrowHeader.setDate(todayHeader.getDate() + 2);
 
 const formatDateHeaderData = (date: Date): string => format(date, 'yyyy-MM-dd');
 
+// Datos de ejemplo - Asegúrate que la interfaz Activity tiene 'category', 'availableDates', 'startTimeNumeric', 'durationHoursNumeric'
 const allActivitiesDataHeader: Activity[] = [
-  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader)], startTimeNumeric: 14, durationHoursNumeric: 1  },
-  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
-  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(dayAfterTomorrowHeader)], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
-  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(todayHeader)], startTimeNumeric: 9, durationHoursNumeric: 3  },
-  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '1', title: 'Paseo en barco por el Sena', duration: '1 hora', rating: 8.8, opinions: 10815, price: 19.25, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'paseo barco sena', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, originalPrice: 24.00, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 14, durationHoursNumeric: 1  },
+  { id: '2', title: 'Entrada a la 3ª planta de la Torre Eiffel', duration: '2-3h', rating: 8.3, opinions: 1513, price: 112.13, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Torre Eiffel alto', destination: 'París', freeCancellation: true, language: 'Español y otros idiomas', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(tomorrowHeader), formatDateHeaderData(dayAfterTomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
+  { id: '3', title: 'Visita guiada por el Museo del Louvre', duration: '2-3h', rating: 8.8, opinions: 4779, price: 90.61, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'Louvre Mona Lisa', destination: 'París', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(dayAfterTomorrowHeader)], startTimeNumeric: 11, durationHoursNumeric: 2.5 },
+  { id: '12', title: 'Visita al Vaticano y Capilla Sixtina', duration: '3 horas', rating: 9.3, opinions: 7500, price: 60.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'vaticano capilla sixtina', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Entradas', availableDates: [formatDateHeaderData(todayHeader), formatDateHeaderData(tomorrowHeader)], startTimeNumeric: 9, durationHoursNumeric: 3  },
+  { id: '13', title: 'Tour por el Coliseo y Foro Romano', duration: '3 horas', rating: 9.0, opinions: 6200, price: 55.00, currency: 'US$', image: 'https://placehold.co/600x400.png', dataAiHint: 'coliseo roma', destination: 'Roma', freeCancellation: true, language: 'Español', isFree: false, category: 'Visitas guiadas', availableDates: [formatDateHeaderData(tomorrowHeader), formatDateHeaderData(dayAfterTomorrowHeader)], startTimeNumeric: 10, durationHoursNumeric: 3 },
 ];
 
 const normalizeStringHeader = (str: string) => {
@@ -42,7 +43,7 @@ const normalizeStringHeader = (str: string) => {
 
 const mainNavItemsForMobile = [
   { href: '/destinations', label: 'Destinos', icon: MapPin },
-  { href: '/activities', label: 'Actividades', icon: Search },
+  { href: '/activities', label: 'Actividades', icon: Search }, // Cambiado icono para 'Actividades'
   { href: '/bookings', label: 'Mis Reservas', icon: BookMarked },
 ];
 
@@ -53,14 +54,14 @@ const desktopUtilityItems = [
 ];
 
 const desktopAuthButtons = [
-  { id: 'login', href: '/login', label: 'Iniciar Sesión', styleClass: 'bg-white text-primary hover:bg-slate-200 focus-visible:ring-white' },
+  { id: 'login', href: '/login', label: 'Iniciar Sesión', styleClass: 'bg-white text-primary hover:bg-gray-100 focus-visible:ring-white' },
   { id: 'signup', href: '/signup', label: 'Regístrate', styleClass: 'bg-transparent border-white text-white hover:bg-white hover:text-primary focus-visible:ring-white', variant: 'outline' as const },
 ];
 
 
 function Logo() {
   return (
-    <Link href="/" passHref legacyBehavior>
+    <Link href="/" legacyBehavior passHref>
       <a className="text-3xl font-bold text-primary-foreground hover:opacity-80 transition-opacity" aria-label="Página de inicio de Travely">
         Travely
       </a>
@@ -279,7 +280,7 @@ function MobileNavLinks({ onLinkClick, itemCount }: { onLinkClick?: () => void; 
       <div className="pt-3 border-t border-primary-foreground/20 mt-3 space-y-2">
         <Button
           asChild
-          className="w-full justify-center text-lg py-3 rounded-md bg-white text-primary hover:bg-slate-200"
+          className="w-full justify-center text-lg py-3 rounded-md bg-white text-primary hover:bg-gray-100"
           onClick={onLinkClick}
         >
           <Link href="/login">
@@ -434,6 +435,7 @@ export function AppHeader() {
   }, [headerSearchWrapperRef]);
 
 
+  // Esqueleto para evitar parpadeo en carga inicial y SSR/hydration mismatch
   if (!mounted) {
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
@@ -443,11 +445,10 @@ export function AppHeader() {
           </div>
           {/* Skeleton para el lado derecho del header en desktop */}
           <div className="hidden md:flex items-center space-x-1 md:space-x-1.5 lg:space-x-2">
-            {pathname !== '/' && (
-              <div className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative">
+             {/* Siempre mostrar un placeholder para el buscador en el esqueleto, la lógica de path se aplica cuando está montado */}
+            <div className="flex-grow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-3 sm:mx-4 relative">
                 <div className="h-9 sm:h-10 bg-primary/80 rounded-full animate-pulse" /> {/* Placeholder para buscador */}
-              </div>
-            )}
+            </div>
             <div className="h-9 sm:h-10 w-28 bg-white/20 rounded-full animate-pulse" /> {/* Iniciar Sesión */}
             <div className="h-9 sm:h-10 w-28 border border-white/20 rounded-full animate-pulse" /> {/* Regístrate */}
             
@@ -483,7 +484,8 @@ export function AppHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[360px] bg-primary text-primary-foreground p-0 flex flex-col">
               <SheetHeader className="p-4 border-b border-primary-foreground/20">
-                <SheetTitle className="text-primary-foreground sr-only">Menú Principal</SheetTitle>
+                 {/* Título del Sheet para accesibilidad, puede ser sr-only si no se quiere mostrar visualmente */}
+                <SheetTitle className="sr-only">Menú Principal</SheetTitle>
               </SheetHeader>
               <div className="flex-grow overflow-y-auto">
                 <MobileNavLinks onLinkClick={() => setSheetOpen(false)} itemCount={itemCount} />
@@ -513,3 +515,4 @@ export function AppHeader() {
     </header>
   );
 }
+
